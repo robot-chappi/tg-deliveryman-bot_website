@@ -13,6 +13,7 @@ import Footer from "./components/Footer/Footer";
 import Order from "./components/Order/Order";
 import Payment from "./components/Payment/Payment";
 import Admin from "./components/Admin/Admin";
+import Auth from "./components/Admin/Auth/Auth";
 // import AppContext from "./context";
 // import axios from "axios";
 
@@ -59,6 +60,7 @@ function App() {
                     <Route path={'/catalog'} element={<Catalog/>}/>
                     <Route path={'/order'} element={<Order/>}/>
                     <Route path={'/payment'} element={<Payment/>}/>
+                    <Route path={'/admin/auth'} element={<Auth/>}/>
                     <Route path={'/admin'} element={<Admin/>}/>
                     <Route path={'/product/:productId'} element={<ProductItem/>}/>
                 </Routes>
