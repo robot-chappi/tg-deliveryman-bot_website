@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import CatalogItem from "../CatalogItem/CatalogItem";
 import filterItemCategory from "../Filter/filter";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 const Catalog = () => {
     const catalogData = [{
@@ -188,6 +190,8 @@ const Catalog = () => {
     }
 
     return (
+        <div>
+            <Header/>
         <div className="bg-white dark:bg-gray-900">
             <div className="pt-20">
                 <h1 className="text-center text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">Каталог</h1>
@@ -257,6 +261,9 @@ const Catalog = () => {
                 </div>
             </section>
         </div>
+            <Footer/>
+        </div>
+
     );
 };
 

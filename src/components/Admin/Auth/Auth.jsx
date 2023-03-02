@@ -1,16 +1,22 @@
 import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
+import Footer from "../../Footer/Footer";
+import Header from "../../Header/Header";
+import { useOutletContext } from "react-router-dom"
 
 const Auth = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
+    const [currentUser, setCurrentUser] = useOutletContext()
+
 
     const authToAdmin = () => {
         try {
-            if (String(password) !== 'qwerty' && String(email) !== 'admin@admin.com') {
+            if (String(password) !== 'qwerty' || String(email) !== 'admin@admin.com') {
                 return navigate("/admin/auth");
             }
+            setCurrentUser({name: 'chappic', role: 'admin'})
             return navigate("/admin");
         } catch (e) {
             console.log(e)
@@ -19,7 +25,8 @@ const Auth = () => {
 
     return (
         <div>
-            <section className="bg-gray-50 dark:bg-gray-900">
+            <Header/>
+            <section className="bg-gray-50 dark:bg-gray-900 py-20">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                     <div
                         className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -52,6 +59,7 @@ const Auth = () => {
                     </div>
                 </div>
             </section>
+            <Footer/>
         </div>
     );
 };

@@ -7,13 +7,12 @@ import {Route, Routes} from "react-router-dom";
 import AOS from 'aos';
 import Main from "./components/Main/Main";
 import Catalog from "./components/Catalog/Catalog";
-import Header from "./components/Header/Header";
 import ProductItem from "./components/ProductItem/ProductItem";
-import Footer from "./components/Footer/Footer";
 import Order from "./components/Order/Order";
 import Payment from "./components/Payment/Payment";
 import Admin from "./components/Admin/Admin";
 import Auth from "./components/Admin/Auth/Auth";
+import Dashboard from "./components/Admin/Dashboard/Dashboard";
 // import AppContext from "./context";
 // import axios from "axios";
 
@@ -54,17 +53,17 @@ function App() {
     return (
         <div className="App">
             {/*<AppContext.Provider value={{items}}>*/}
-                <Header/>
                 <Routes>
                     <Route index element={<Main/>}/>
                     <Route path={'/catalog'} element={<Catalog/>}/>
                     <Route path={'/order'} element={<Order/>}/>
                     <Route path={'/payment'} element={<Payment/>}/>
-                    <Route path={'/admin/auth'} element={<Auth/>}/>
-                    <Route path={'/admin'} element={<Admin/>}/>
+                    <Route path={'/admin'} element={<Admin/>}>
+                        <Route path={'/admin'} element={<Dashboard/>}/>
+                        <Route path={'/admin/auth'} element={<Auth/>}/>
+                    </Route>
                     <Route path={'/product/:productId'} element={<ProductItem/>}/>
                 </Routes>
-                <Footer/>
             {/*</AppContext.Provider>*/}
         </div>
     );

@@ -6,6 +6,8 @@ import delivery from "../../assets/images/delivery-club-seeklogo.com.svg";
 import sber from "../../assets/images/sberbank-svgrepo-com.svg";
 import Typewriter from "typewriter-effect";
 import {Link} from "react-router-dom";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 
 const Main = () => {
@@ -15,6 +17,7 @@ const Main = () => {
 
     return (
         <div>
+            <Header/>
             <section id={'main'} className="bg-white dark:bg-gray-900 pb-6">
                 <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
                     <div
@@ -325,6 +328,7 @@ const Main = () => {
                     </div>
                 </div>
             </section>
+            <Footer/>
         </div>
     );
 };

@@ -1,6 +1,8 @@
 import React from 'react';
 import './ProductItem.css';
 import {Link, useNavigate, useParams} from "react-router-dom";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 const ProductItem = () => {
     const {productId} = useParams();
@@ -18,6 +20,8 @@ const ProductItem = () => {
         price: 500
     }
     return (
+        <div>
+        <Header/>
         <section className="bg-white dark:bg-gray-900 pb-6">
             <button className={"inline-flex justify-center items-center py-2 px-3 text-base font-medium text-center text-white rounded-br-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"} onClick={() => navigate(-1)}>Назад</button>
             <div
@@ -50,6 +54,8 @@ const ProductItem = () => {
                 </div>
             </div>
         </section>
+        <Footer/>
+        </div>
     );
 };
 

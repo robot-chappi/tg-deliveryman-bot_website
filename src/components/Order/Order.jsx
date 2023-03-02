@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import getMealPlan from "../GenerationWeeklyMealPlan/GenerationWeeklyMealPlan";
 import {favoriteProducts, favoriteIngredients, categories} from "../GenerationWeeklyMealPlan/mockdata";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 const Order = () => {
     const [fullname, setFullname] = useState('');
@@ -93,6 +95,7 @@ const Order = () => {
 
     return (
         <div>
+            <Header/>
             <section className="bg-white dark:bg-gray-900">
                 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
                     <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Создать рацион питания</h2>
@@ -281,6 +284,7 @@ const Order = () => {
                     </div>
                 </div>
             </section>
+            <Footer/>
         </div>
     );
 };

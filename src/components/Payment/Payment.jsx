@@ -3,6 +3,8 @@ import {
     order, pricesList, mockPrice
 } from "../GenerationWeeklyMealPlan/mockdata";
 import {useNavigate} from "react-router-dom";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 
 const Payment = () => {
@@ -11,7 +13,6 @@ const Payment = () => {
     const [price, setPrice] = useState();
     const navigate = useNavigate();
 
-    setMyOrder(order);
 
     const changePrice = (event) => {
         setPriceId(event.target.value)
@@ -25,6 +26,7 @@ const Payment = () => {
 
     const deletePayment = () => {
         try {
+            setMyOrder(null);
             return navigate("/");
         } catch (e) {
             console.log(e)
@@ -43,6 +45,7 @@ const Payment = () => {
 
     return (
         <div>
+            <Header/>
             <section
                  className="block p-4 w-full bg-white transition-transform dark:bg-gray-800">
                 <div className='pt-5'>
@@ -162,6 +165,7 @@ const Payment = () => {
                     </button>
                 </div>
             </section>
+            <Footer/>
         </div>
     );
 };
