@@ -13,6 +13,7 @@ const Auth = () => {
 
     const authToAdmin = () => {
         try {
+            console.log(currentUser)
             if (String(password) !== 'qwerty' || String(email) !== 'admin@admin.com') {
                 return navigate("/admin/auth");
             }

@@ -13,6 +13,7 @@ import Payment from "./components/Payment/Payment";
 import Admin from "./components/Admin/Admin";
 import Auth from "./components/Admin/Auth/Auth";
 import Dashboard from "./components/Admin/Dashboard/Dashboard";
+import Page404 from "./components/404/Page404";
 // import AppContext from "./context";
 // import axios from "axios";
 
@@ -63,6 +64,7 @@ function App() {
                         <Route path={'/admin/auth'} element={<Auth/>}/>
                     </Route>
                     <Route path={'/product/:productId'} element={<ProductItem/>}/>
+                    <Route path={'*'} element={<Page404/>}/>
                 </Routes>
             {/*</AppContext.Provider>*/}
         </div>
