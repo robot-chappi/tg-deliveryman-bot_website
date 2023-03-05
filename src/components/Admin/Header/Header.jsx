@@ -6,7 +6,7 @@ import {
     faBug,
     faCartShopping,
     faClose,
-    faDoorOpen,
+    faDoorOpen, faList, faListNumeric,
     faMoneyBill,
     faShop
 } from '@fortawesome/free-solid-svg-icons'
@@ -16,6 +16,8 @@ import {useNavigate} from "react-router-dom";
 const Header = () => {
     const [openPages, setOpenPages] = useState(false);
     const [openProducts, setOpenProducts] = useState(false);
+    const [openCategories, setOpenCategories] = useState(false);
+    const [openTypes, setOpenTypes] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ const Header = () => {
     }
 
     return (
-        <aside className={`fixed top-0 z-30 left-0 w-64 h-full transition`} style={{left: `${openMenu ? '0' : '-255px'}`}} aria-label="Sidenav">
+        <aside className={`fixed top-0 z-30 left-0 w-64 h-full transition`} style={{transform: `translateX(${openMenu ? '0' : '-255px'})`}} aria-label="Sidenav">
             <div onClick={() => toggle(openMenu, setOpenMenu)} className={`${openMenu ? 'block' : 'hidden'} absolute p-2 z-20 w-full text-xl font-normal text-white dark:text-gray-900`} style={{top: '0', left: '83%'}}>
                 <span className={'bg-gray-800 dark:bg-white px-2 rounded-full'}>
                     <FontAwesomeIcon icon={faClose}/>
@@ -47,39 +49,75 @@ const Header = () => {
                 className="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                 <ul className="space-y-2">
                     <li>
-                        <a href="https://www.donationalerts.com/r/chappic"
+                        <a href="/admin"
                            className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                             <FontAwesomeIcon className="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" icon={faShop}/>
                             <span className="ml-3">Статистика</span>
                         </a>
                     </li>
                     <li>
-                        <button type="button" onClick={() => toggle(openPages, setOpenPages)}
+                        <button type="button" onClick={() => toggle(openProducts, setOpenProducts)}
                                 className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
                             <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faBowlFood}/>
                             <span className="flex-1 ml-3 text-left whitespace-nowrap">Продукты</span>
                         </button>
-                        <ul id="dropdown-pages" className={`${openPages ? 'block' : 'hidden'} py-2 space-y-2`}>
+                        <ul id="dropdown-pages" className={`${openProducts ? 'block' : 'hidden'} py-2 space-y-2`}>
                             <li>
-                                <a href="https://www.donationalerts.com/r/chappic"
+                                <a href="/admin/products"
                                    className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
                             </li>
                             <li>
-                                <a href="https://www.donationalerts.com/r/chappic"
+                                <a href="/admin/products/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openCategories, setOpenCategories)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faList}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Категории</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openCategories ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/categories"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/categories/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openTypes, setOpenTypes)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faListNumeric}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Типы</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openTypes ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/types"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/types/create"
                                    className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
                             </li>
                         </ul>
                     </li>
                     <li>
                         <button type="button"
-                                onClick={() => toggle(openProducts, setOpenProducts)}
+                                onClick={() => toggle(openPages, setOpenPages)}
                                 className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 aria-controls="dropdown-sales" data-collapse-toggle="dropdown-sales">
                             <FontAwesomeIcon className="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" icon={faCartShopping}/>
                             <span className="flex-1 ml-3 text-left whitespace-nowrap">Продажи</span>
                         </button>
-                        <ul id="dropdown-sales" className={`${openProducts ? 'block' : 'hidden'} py-2 space-y-2`}>
+                        <ul id="dropdown-sales" className={`${openPages ? 'block' : 'hidden'} py-2 space-y-2`}>
                             <li>
                                 <a href="https://www.donationalerts.com/r/chappic"
                                    className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Продукты</a>

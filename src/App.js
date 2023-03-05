@@ -14,6 +14,21 @@ import Admin from "./components/Admin/Admin";
 import Auth from "./components/Admin/Auth/Auth";
 import Dashboard from "./components/Admin/Dashboard/Dashboard";
 import Page404 from "./components/404/Page404";
+import Products from "./components/Admin/CRUD/Products/Products";
+import EditProducts from "./components/Admin/CRUD/Products/EditProducts";
+import CreateProducts from "./components/Admin/CRUD/Products/CreateProducts";
+import IndexProducts from "./components/Admin/CRUD/Products/IndexProducts";
+import ReviewProduct from "./components/Admin/CRUD/Products/ReviewProduct";
+import IndexCategories from "./components/Admin/CRUD/Categories/IndexCategories";
+import Categories from "./components/Admin/CRUD/Categories/Categories";
+import CreateCategories from "./components/Admin/CRUD/Categories/CreateCategories";
+import EditCategories from "./components/Admin/CRUD/Categories/EditCategories";
+import ReviewCategories from "./components/Admin/CRUD/Categories/ReviewCategories";
+import IndexTypes from "./components/Admin/CRUD/Types/IndexTypes";
+import Types from "./components/Admin/CRUD/Types/Types";
+import CreateTypes from "./components/Admin/CRUD/Types/CreateTypes";
+import ReviewTypes from "./components/Admin/CRUD/Types/ReviewTypes";
+import EditTypes from "./components/Admin/CRUD/Types/EditTypes";
 // import AppContext from "./context";
 // import axios from "axios";
 
@@ -61,6 +76,24 @@ function App() {
                     <Route path={'/payment'} element={<Payment/>}/>
                     <Route path={'/admin'} element={<Admin/>}>
                         <Route path={'/admin'} element={<Dashboard/>}/>
+                        <Route path={'/admin/products'} element={<IndexProducts/>}>
+                            <Route path={'/admin/products'} element={<Products/>}/>
+                            <Route path={'/admin/products/create'} element={<CreateProducts/>}/>
+                            <Route path={'/admin/products/show/:id'} element={<ReviewProduct/>}/>
+                            <Route path={'/admin/products/edit/:id'} element={<EditProducts/>}/>
+                        </Route>
+                        <Route path={'/admin/categories'} element={<IndexCategories/>}>
+                            <Route path={'/admin/categories'} element={<Categories/>}/>
+                            <Route path={'/admin/categories/create'} element={<CreateCategories/>}/>
+                            <Route path={'/admin/categories/show/:id'} element={<ReviewCategories/>}/>
+                            <Route path={'/admin/categories/edit/:id'} element={<EditCategories/>}/>
+                        </Route>
+                        <Route path={'/admin/types'} element={<IndexTypes/>}>
+                            <Route path={'/admin/types'} element={<Types/>}/>
+                            <Route path={'/admin/types/create'} element={<CreateTypes/>}/>
+                            <Route path={'/admin/types/show/:id'} element={<ReviewTypes/>}/>
+                            <Route path={'/admin/types/edit/:id'} element={<EditTypes/>}/>
+                        </Route>
                         <Route path={'/admin/auth'} element={<Auth/>}/>
                     </Route>
                     <Route path={'/product/:productId'} element={<ProductItem/>}/>

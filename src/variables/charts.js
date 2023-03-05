@@ -1,6 +1,6 @@
 export const barChartDataDailyTraffic = [
     {
-        name: "Daily Traffic",
+        name: "Клиенты",
         data: [20, 30, 40, 20, 45, 50, 30],
     },
 ];
@@ -26,7 +26,7 @@ export const barChartOptionsDailyTraffic = {
         theme: "dark",
     },
     xaxis: {
-        categories: ["00", "04", "08", "12", "14", "16", "18"],
+        categories: ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"],
         show: false,
         labels: {
             show: true,
@@ -79,7 +79,7 @@ export const barChartOptionsDailyTraffic = {
                 [
                     {
                         offset: 0,
-                        color: "#4318FF",
+                        color: "#ff18d9",
                         opacity: 1,
                     },
                     {

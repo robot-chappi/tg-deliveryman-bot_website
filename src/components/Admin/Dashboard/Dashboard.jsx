@@ -6,9 +6,11 @@ import {barChartDataDailyTraffic, barChartOptionsDailyTraffic} from "../../../va
 import TableProducts from "./TableProducts/TableProducts";
 import Panel from "../Panel/Panel";
 import MiniStatistic from "../../../charts/MiniStatistic";
+import Footer from "../Footer/Footer";
 
 
 const Dashboard = () => {
+    // eslint-disable-next-line no-unused-vars
     const [currentUser] = useOutletContext()
 
     const hour = new Date().getHours();
@@ -17,9 +19,12 @@ const Dashboard = () => {
         <div>
             <Header/>
             <Panel user={'Chappic'} hour={hour}/>
-            {/*<div className="absolute -bottom-8 left-30 w-72 h-72 bg-pink-700 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>*/}
-            <div className="absolute -bottom-15 -left-20 w-72 h-72 bg-pink-300 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-            <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-700 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+            <div style={{overflowX: 'clip', position: 'relative'}}>
+                <div className="absolute top-5 w-72 h-72 bg-pink-300 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                <div className="absolute left-40 w-72 h-72 bg-pink-700 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000" style={{bottom: '-40rem'}}></div>
+                <div className="absolute left-30 w-72 h-72 bg-pink-100 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000" style={{bottom: '-60rem'}}></div>
+                <div className="absolute left-40 w-72 h-72 bg-pink-700 rounded-full filter blur-xl opacity-70 animate-blob animation-delay-4000" style={{bottom: '-40rem'}}></div>
+            </div>
             <section id={'statistic'} className={'bg-white dark:bg-gray-900 pt-14'}>
                 <MiniStatistic application={380} users={400} subscribers={89} products={400}/>
                 <div>
@@ -28,6 +33,7 @@ const Dashboard = () => {
                 </div>
             </section>
             <TableProducts/>
+            <Footer/>
         </div>
     );
 };

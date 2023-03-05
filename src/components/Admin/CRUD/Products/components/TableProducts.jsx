@@ -1,16 +1,32 @@
 import React, {useState} from 'react';
-import {catalogData} from "../../../GenerationWeeklyMealPlan/mockdata";
-import filterItemCategory from "../../../Filter/filter";
+import filterItemCategory from "../../../../Filter/filter";
+import {catalogData, categories} from "../../../../GenerationWeeklyMealPlan/mockdata";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
+import {useNavigate} from "react-router-dom";
 
 const TableProducts = () => {
     const [catalogDataItems, setCatalogDataItems] = useState(catalogData);
     const [paginateBack, setPaginateBack] = useState(0);
     const [paginateForward, setPaginateForward] = useState(5);
+    const navigate = useNavigate();
 
     // eslint-disable-next-line no-unused-vars
     const changeCategory = (name) => {
         const items = filterItemCategory(catalogData, name);
         return setCatalogDataItems(items);
+    }
+
+    const openProduct = (id) => {
+        return navigate(`/admin/products/show/${id}`);
+    }
+
+    const editProduct = (id) => {
+        return navigate(`/admin/products/edit/${id}`);
+    }
+
+    const deleteProduct = (id) => {
+        return navigate('/admin')
     }
 
     return (
@@ -23,11 +39,44 @@ const TableProducts = () => {
                 <div className="bg-gray-50 dark:bg-gray-900 py-3 sm:py-5">
                     <div className="px-4 mx-auto max-w-screen-2xl lg:px-12">
                         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+                            <div
+                                className="flex flex-col px-4 py-3 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
+                                <div className="flex items-center flex-1 space-x-4">
+                                    <h5>
+                                        <span className="text-gray-500">Всего продуктов: </span>
+                                        <span className="dark:text-white">{catalogData.length}</span>
+                                    </h5>
+                                </div>
+                                <div
+                                    className="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
+                                    <button type="button" onClick={() => navigate('/admin/products/create')}
+                                            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                        <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path clipRule="evenodd" fillRule="evenodd"
+                                                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                                        </svg>
+                                        Добавить продукт
+                                    </button>
+                                </div>
+                                <div className={'flex items-center space-y-3 gap-1'} style={{flexWrap: 'wrap'}}>
+                                    {categories.map((i) => {
+                                        return <button key={i.id} onClick={() => changeCategory(i.title)} type={'button'} className="flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:bg-primary-400 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600">
+                                            {i.title}
+                                        </button>
+                                    })}
+                                    <button onClick={() => setCatalogDataItems(catalogData)} type={'button'} className="flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:bg-primary-400 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600">
+                                        Сбросить
+                                    </button>
+                                </div>
+                            </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                     <thead
                                         className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
+                                        <th scope="col" className="px-4 py-3">Инструменты</th>
+                                        <th scope="col" className="px-4 py-3">ID</th>
                                         <th scope="col" className="px-4 py-3">Фото</th>
                                         <th scope="col" className="px-4 py-3">Название</th>
                                         <th scope="col" className="px-4 py-3">Категория</th>
@@ -39,18 +88,37 @@ const TableProducts = () => {
                                     <tbody>
                                     {catalogDataItems.slice(paginateBack, paginateForward).map((i) => {
                                         return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <td className="w-4 px-4 py-3">
+                                                <div className={'flex items-center gap-2'}>
+                                                    <button type="button" onClick={() => openProduct(i.id)}
+                                                            className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                                        <FontAwesomeIcon icon={faBookOpen}/>
+                                                    </button>
+                                                    <button type="button" onClick={() => editProduct(i.id)}
+                                                            className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                                        <FontAwesomeIcon icon={faEdit}/>
+                                                    </button>
+                                                    <button type="button" onClick={() => deleteProduct(i.id)}
+                                                            className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                                        <FontAwesomeIcon icon={faMinus}/>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <th scope="row"
-                                                className="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                className="flex items-center px-4 pt-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                {i.id}
+                                            </th>
+                                            <td className="px-4 py-2">
                                                 <img
                                                     src={i.image}
                                                     alt="food" className="w-auto h-8 mr-3"/>
-                                            </th>
+                                            </td>
                                             <td className="px-4 py-2">
                                                 {i.title}
                                             </td>
                                             <td className="px-5 py-2">
-                                            <h1
-                                                className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300 text-center">{i.category.title}</h1>
+                                                <h1
+                                                    className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300 text-center">{i.category.title}</h1>
                                             </td>
                                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                 <div className="flex items-center">
