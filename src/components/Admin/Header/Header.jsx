@@ -32,14 +32,14 @@ const Header = () => {
     }
 
     return (
-        <aside className={`fixed top-0 left-0 w-64 h-full transition`} style={{left: `${openMenu ? '0' : '-255px'}`}} aria-label="Sidenav">
+        <aside className={`fixed top-0 z-30 left-0 w-64 h-full transition`} style={{left: `${openMenu ? '0' : '-255px'}`}} aria-label="Sidenav">
             <div onClick={() => toggle(openMenu, setOpenMenu)} className={`${openMenu ? 'block' : 'hidden'} absolute p-2 z-20 w-full text-xl font-normal text-white dark:text-gray-900`} style={{top: '0', left: '83%'}}>
-                <span className={'bg-gray-800 dark:bg-white px-2 rounded-xl'} style={{border: '2px solid #000000', borderRadius: '10px'}}>
+                <span className={'bg-gray-800 dark:bg-white px-2 rounded-full'}>
                     <FontAwesomeIcon icon={faClose}/>
                 </span>
             </div>
             <div onClick={() => toggle(openMenu, setOpenMenu)} className={`${openMenu ? 'hidden' : 'block'} absolute p-2 z-20 w-full text-xl font-normal text-white dark:text-gray-900`} style={{top: '0', left: '100%'}}>
-                <span className={'bg-gray-800 dark:bg-white px-2 rounded-xl'} style={{border: '2px solid #000000', borderRadius: '10px'}}>
+                <span className={'bg-gray-800 dark:bg-white px-1 rounded-full'}>
                     <FontAwesomeIcon icon={faArrowRight}/>
                 </span>
             </div>
