@@ -29,6 +29,26 @@ import Types from "./components/Admin/CRUD/Types/Types";
 import CreateTypes from "./components/Admin/CRUD/Types/CreateTypes";
 import ReviewTypes from "./components/Admin/CRUD/Types/ReviewTypes";
 import EditTypes from "./components/Admin/CRUD/Types/EditTypes";
+import IndexRoles from "./components/Admin/CRUD/Roles/IndexRoles";
+import Roles from "./components/Admin/CRUD/Roles/Roles";
+import CreateRoles from "./components/Admin/CRUD/Roles/CreateRoles";
+import ReviewRoles from "./components/Admin/CRUD/Roles/ReviewRoles";
+import EditRoles from "./components/Admin/CRUD/Roles/EditRoles";
+import IndexUsers from "./components/Admin/CRUD/Users/IndexUsers";
+import Users from "./components/Admin/CRUD/Users/Users";
+import CreateUsers from "./components/Admin/CRUD/Users/CreateUsers";
+import ReviewUsers from "./components/Admin/CRUD/Users/ReviewUsers";
+import EditUsers from "./components/Admin/CRUD/Users/EditUsers";
+import IndexTariff from "./components/Admin/CRUD/Tariff/IndexTariff";
+import Tariff from "./components/Admin/CRUD/Tariff/Tariff";
+import CreateTariff from "./components/Admin/CRUD/Tariff/CreateTariff";
+import ReviewTariff from "./components/Admin/CRUD/Tariff/ReviewTariff";
+import EditTariff from "./components/Admin/CRUD/Tariff/EditTariff";
+import IndexPrivileges from "./components/Admin/CRUD/Privileges/IndexPrivileges";
+import CreatePrivileges from "./components/Admin/CRUD/Privileges/CreatePrivileges";
+import ReviewPrivileges from "./components/Admin/CRUD/Privileges/ReviewPrivileges";
+import EditPrivileges from "./components/Admin/CRUD/Privileges/EditPrivileges";
+import Privileges from "./components/Admin/CRUD/Privileges/Privileges";
 // import AppContext from "./context";
 // import axios from "axios";
 
@@ -93,6 +113,30 @@ function App() {
                             <Route path={'/admin/types/create'} element={<CreateTypes/>}/>
                             <Route path={'/admin/types/show/:id'} element={<ReviewTypes/>}/>
                             <Route path={'/admin/types/edit/:id'} element={<EditTypes/>}/>
+                        </Route>
+                        <Route path={'/admin/roles'} element={<IndexRoles/>}>
+                            <Route path={'/admin/roles'} element={<Roles/>}/>
+                            <Route path={'/admin/roles/create'} element={<CreateRoles/>}/>
+                            <Route path={'/admin/roles/show/:id'} element={<ReviewRoles/>}/>
+                            <Route path={'/admin/roles/edit/:id'} element={<EditRoles/>}/>
+                        </Route>
+                        <Route path={'/admin/users'} element={<IndexUsers/>}>
+                            <Route path={'/admin/users'} element={<Users/>}/>
+                            <Route path={'/admin/users/create'} element={<CreateUsers/>}/>
+                            <Route path={'/admin/users/show/:id'} element={<ReviewUsers/>}/>
+                            <Route path={'/admin/users/edit/:id'} element={<EditUsers/>}/>
+                        </Route>
+                        <Route path={'/admin/tariff'} element={<IndexTariff/>}>
+                            <Route path={'/admin/tariff'} element={<Tariff/>}/>
+                            <Route path={'/admin/tariff/create'} element={<CreateTariff/>}/>
+                            <Route path={'/admin/tariff/show/:id'} element={<ReviewTariff/>}/>
+                            <Route path={'/admin/tariff/edit/:id'} element={<EditTariff/>}/>
+                        </Route>
+                        <Route path={'/admin/privileges'} element={<IndexPrivileges/>}>
+                            <Route path={'/admin/privileges'} element={<Privileges/>}/>
+                            <Route path={'/admin/privileges/create'} element={<CreatePrivileges/>}/>
+                            <Route path={'/admin/privileges/show/:id'} element={<ReviewPrivileges/>}/>
+                            <Route path={'/admin/privileges/edit/:id'} element={<EditPrivileges/>}/>
                         </Route>
                         <Route path={'/admin/auth'} element={<Auth/>}/>
                     </Route>

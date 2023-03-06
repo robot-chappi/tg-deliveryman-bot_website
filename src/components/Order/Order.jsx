@@ -61,6 +61,7 @@ const Order = () => {
             formData.append('unlovedFood', unlovedFood);
             formData.append('foodFromFavorite', foodFromFavorite);
             formData.append('mealPlan', mealPlan);
+            formData.append('mealPlanPrice', mealPlanPrice);
             formData.append('wish', wish);
 
             return console.log(formData);
@@ -85,6 +86,7 @@ const Order = () => {
             const plan = getMealPlan(userData);
 
             setMealPlanPrice(plan['price']);
+            console.log(plan)
             delete plan['price'];
 
             return setMealPlan(plan);

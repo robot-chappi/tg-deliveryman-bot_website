@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-    faArrowRight,
+    faArrowRight, faArrowUp, faBookOpen,
     faBowlFood,
     faBug,
     faCartShopping,
     faClose,
     faDoorOpen, faList, faListNumeric,
-    faMoneyBill,
-    faShop
+    faMoneyBill, faPlay,
+    faShop, faUser
 } from '@fortawesome/free-solid-svg-icons'
 import {useNavigate} from "react-router-dom";
 
@@ -18,6 +18,10 @@ const Header = () => {
     const [openProducts, setOpenProducts] = useState(false);
     const [openCategories, setOpenCategories] = useState(false);
     const [openTypes, setOpenTypes] = useState(false);
+    const [openRoles, setOpenRoles] = useState(false);
+    const [openUsers, setOpenUsers] = useState(false);
+    const [openTariff, setOpenTariff] = useState(false);
+    const [openPrivileges, setOpenPrivileges] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
 
@@ -91,6 +95,79 @@ const Header = () => {
                             </li>
                         </ul>
                     </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openUsers, setOpenUsers)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faUser}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Пользователи</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openUsers ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/users"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/users/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openRoles, setOpenRoles)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faPlay}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Роли</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openRoles ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/roles"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/roles/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openTariff, setOpenTariff)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faBookOpen}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Тарифы</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openTariff ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/tariff"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/tariff/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openPrivileges, setOpenPrivileges)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faArrowUp}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Преимущества</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openPrivileges ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/privileges"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/privileges/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <li>
                         <button type="button" onClick={() => toggle(openTypes, setOpenTypes)}
                                 className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
