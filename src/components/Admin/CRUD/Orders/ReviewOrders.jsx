@@ -82,12 +82,77 @@ const ReviewOrders = () => {
                             return <p key={i.id}>{i.title}</p>
                         })}</div></td>
                     </tr>
+                    <tr className="border-b dark:border-gray-700">
+                        <th className='px-4 py-3'>План питания</th>
+                        <td className='px-4 py-3 text-gray-800 dark:text-white'>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Понедельник</h2>
+                                <div>
+                                {order.mealPlan['Понедельник'].map((i) => {
+                                return <p key={i.id}>{i.title}</p>
+                            })}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Вторник</h2>
+                                <div>
+                                    {order.mealPlan['Вторник'].map((i) => {
+                                        return <p key={i.id}>{i.title}</p>
+                                    })}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Среда</h2>
+                                <div>
+                                    {order.mealPlan['Среда'].map((i) => {
+                                        return <p key={i.id}>{i.title}</p>
+                                    })}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Четверг</h2>
+                                <div>
+                                    {order.mealPlan['Четверг'].map((i) => {
+                                        return <p key={i.id}>{i.title}</p>
+                                    })}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Пятница</h2>
+                                <div>
+                                    {order.mealPlan['Пятница'].map((i) => {
+                                        return <p key={i.id}>{i.title}</p>
+                                    })}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Суббота</h2>
+                                <div>
+                                    {order.mealPlan['Суббота'].map((i) => {
+                                        return <p key={i.id}>{i.title}</p>
+                                    })}
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={'text-gray-800 dark:text-white text-lg py-1'}>Воскресенье</h2>
+                                <div>
+                                    {order.mealPlan['Воскресенье'].map((i) => {
+                                        return <p key={i.id}>{i.title}</p>
+                                    })}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr className="border-b dark:border-gray-700">
+                        <th className='px-4 py-3'>Цена</th>
+                        <td className='px-4 py-3 text-gray-800 dark:text-white'>{order.mealPlanPrice}руб.</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
             <div className={'flex justify-center pb-5'}>
                 <button type={"button"}
-                        onClick={() => navigate('/admin/products')}
+                        onClick={() => navigate('/admin/orders')}
                         className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                     Назад
                 </button>

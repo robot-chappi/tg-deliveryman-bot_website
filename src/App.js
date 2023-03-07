@@ -49,6 +49,15 @@ import CreatePrivileges from "./components/Admin/CRUD/Privileges/CreatePrivilege
 import ReviewPrivileges from "./components/Admin/CRUD/Privileges/ReviewPrivileges";
 import EditPrivileges from "./components/Admin/CRUD/Privileges/EditPrivileges";
 import Privileges from "./components/Admin/CRUD/Privileges/Privileges";
+import IndexOrders from "./components/Admin/CRUD/Orders/IndexOrders";
+import Orders from "./components/Admin/CRUD/Orders/Orders";
+import ReviewOrders from "./components/Admin/CRUD/Orders/ReviewOrders";
+import IndexFAQs from "./components/Admin/CRUD/FAQs/IndexFAQs";
+import FAQs from "./components/Admin/CRUD/FAQs/FAQs";
+import CreateFAQs from "./components/Admin/CRUD/FAQs/CreateFAQs";
+import ReviewFAQs from "./components/Admin/CRUD/FAQs/ReviewFAQs";
+import EditFAQs from "./components/Admin/CRUD/FAQs/EditFAQs";
+import UserFAQ from "./components/UserFAQ/UserFAQ";
 // import AppContext from "./context";
 // import axios from "axios";
 
@@ -92,6 +101,7 @@ function App() {
                 <Routes>
                     <Route index element={<Main/>}/>
                     <Route path={'/catalog'} element={<Catalog/>}/>
+                    <Route path={'/faq_users'} element={<UserFAQ/>}/>
                     <Route path={'/order'} element={<Order/>}/>
                     <Route path={'/payment'} element={<Payment/>}/>
                     <Route path={'/admin'} element={<Admin/>}>
@@ -137,6 +147,16 @@ function App() {
                             <Route path={'/admin/privileges/create'} element={<CreatePrivileges/>}/>
                             <Route path={'/admin/privileges/show/:id'} element={<ReviewPrivileges/>}/>
                             <Route path={'/admin/privileges/edit/:id'} element={<EditPrivileges/>}/>
+                        </Route>
+                        <Route path={'/admin/faqs'} element={<IndexFAQs/>}>
+                            <Route path={'/admin/faqs'} element={<FAQs/>}/>
+                            <Route path={'/admin/faqs/create'} element={<CreateFAQs/>}/>
+                            <Route path={'/admin/faqs/show/:id'} element={<ReviewFAQs/>}/>
+                            <Route path={'/admin/faqs/edit/:id'} element={<EditFAQs/>}/>
+                        </Route>
+                        <Route path={'/admin/orders'} element={<IndexOrders/>}>
+                            <Route path={'/admin/orders'} element={<Orders/>}/>
+                            <Route path={'/admin/orders/show/:id'} element={<ReviewOrders/>}/>
                         </Route>
                         <Route path={'/admin/auth'} element={<Auth/>}/>
                     </Route>

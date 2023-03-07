@@ -7,14 +7,13 @@ import {
     faCartShopping,
     faClose,
     faDoorOpen, faList, faListNumeric,
-    faMoneyBill, faPlay,
+    faPlay,
     faShop, faUser
 } from '@fortawesome/free-solid-svg-icons'
 import {useNavigate} from "react-router-dom";
 
 
 const Header = () => {
-    const [openPages, setOpenPages] = useState(false);
     const [openProducts, setOpenProducts] = useState(false);
     const [openCategories, setOpenCategories] = useState(false);
     const [openTypes, setOpenTypes] = useState(false);
@@ -22,6 +21,7 @@ const Header = () => {
     const [openUsers, setOpenUsers] = useState(false);
     const [openTariff, setOpenTariff] = useState(false);
     const [openPrivileges, setOpenPrivileges] = useState(false);
+    const [openOrders, setOpenOrders] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
     const navigate = useNavigate();
 
@@ -187,51 +187,35 @@ const Header = () => {
                         </ul>
                     </li>
                     <li>
-                        <button type="button"
-                                onClick={() => toggle(openPages, setOpenPages)}
+                        <button type="button" onClick={() => toggle(openOrders, setOpenOrders)}
                                 className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                aria-controls="dropdown-sales" data-collapse-toggle="dropdown-sales">
-                            <FontAwesomeIcon className="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" icon={faCartShopping}/>
-                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Продажи</span>
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faCartShopping}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Заказы</span>
                         </button>
-                        <ul id="dropdown-sales" className={`${openPages ? 'block' : 'hidden'} py-2 space-y-2`}>
+                        <ul id="dropdown-pages" className={`${openOrders ? 'block' : 'hidden'} py-2 space-y-2`}>
                             <li>
-                                <a href="https://www.donationalerts.com/r/chappic"
-                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Продукты</a>
-                            </li>
-                            <li>
-                                <a href="https://www.donationalerts.com/r/chappic"
-                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Планы</a>
-                            </li>
-                            <li>
-                                <a href="https://www.donationalerts.com/r/chappic"
-                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Пользователи</a>
+                                <a href="/admin/orders"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
                             </li>
                         </ul>
                     </li>
                 </ul>
                 <ul className="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
                     <li>
-                        <a href="https://www.donationalerts.com/r/chappic"
+                        <a href="/admin/faqs"
                            className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">
                             <FontAwesomeIcon className="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" icon={faBug}/>
                             <span className="ml-3 ">Зона FAQ</span>
                         </a>
                     </li>
                     <li>
-                        <a href="https://www.donationalerts.com/r/chappic"
-                           className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">
-                            <FontAwesomeIcon className="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" icon={faMoneyBill}/>
-                            <span className="ml-3">Тарифы</span>
-                        </a>
+                        <button type={'button'} onClick={logout} className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">
+                            <FontAwesomeIcon icon={faDoorOpen}/>
+                            <span className={'pl-1'}>Выйти</span>
+                        </button>
                     </li>
                 </ul>
-            </div>
-            <div className={'absolute p-2 z-20 w-full text-base font-normal text-gray-900 dark:text-white'} style={{bottom: '1%'}}>
-                <button type={'button'} onClick={logout} className="text-lg text-gray-900 dark:text-white">
-                    <FontAwesomeIcon icon={faDoorOpen}/>
-                    <span className={'pl-1'}>Выйти</span>
-                </button>
             </div>
             </aside>
     );

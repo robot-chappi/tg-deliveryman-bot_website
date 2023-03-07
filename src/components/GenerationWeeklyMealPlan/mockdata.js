@@ -2812,6 +2812,44 @@ const mealPlan = {
     ],
 }
 
+const faqs = [
+    {
+        id: 1,
+        title: 'Как работать с доставкой?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+    {
+        id: 2,
+        title: 'Что влияет на качество работы?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+    {
+        id: 3,
+        title: 'Как работать с доставкой?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+    {
+        id: 4,
+        title: 'Как работать с доставкой?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+    {
+        id: 5,
+        title: 'Как работать с доставкой?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+    {
+        id: 6,
+        title: 'Как работать с доставкой?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+    {
+        id: 7,
+        title: 'Как работать с доставкой?',
+        description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
+    },
+]
+
 const orders = [{
     id: 1,
     fullname: 'Иванов Иван Иванович',
@@ -2826,7 +2864,8 @@ const orders = [{
     foodFromFavorite: favoriteProducts,
     mealPlan: mealPlan,
     mealPlanPrice: 11000,
-    wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.'
+    wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.',
+    isComplete: false
 },
     {
         id: 2,
@@ -2842,7 +2881,8 @@ const orders = [{
         foodFromFavorite: favoriteProducts,
         mealPlan: mealPlan,
         mealPlanPrice: 11000,
-        wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.'
+        wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.',
+        isComplete: false
     },
     {
         id: 3,
@@ -2858,7 +2898,8 @@ const orders = [{
         foodFromFavorite: favoriteProducts,
         mealPlan: mealPlan,
         mealPlanPrice: 11000,
-        wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.'
+        wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.',
+        isComplete: true
     },
     {
         id: 4,
@@ -2874,10 +2915,11 @@ const orders = [{
         foodFromFavorite: favoriteProducts,
         mealPlan: mealPlan,
         mealPlanPrice: 11000,
-        wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.'
+        wish: 'Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text.',
+        isComplete: false
     },
 ]
 
 const mockPrice = 10000;
 
-module.exports = {favoriteIngredients, catalogData, categories, favoriteProducts, types, unlovedIngredients, order, pricesList, mockPrice, privileges, tariff, users, roles, orders, mealPlan}
+module.exports = {favoriteIngredients, catalogData, categories, favoriteProducts, types, unlovedIngredients, order, pricesList, mockPrice, privileges, tariff, users, roles, orders, mealPlan, faqs}
