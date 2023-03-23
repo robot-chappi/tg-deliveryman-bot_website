@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useContext} from 'react'
 import {Link} from "react-router-dom";
+import {Context} from '../../index'
+import {tgChannel} from '../../variables/charts'
 
 const CatalogItem = props => {
     const product = props.item
@@ -7,6 +9,9 @@ const CatalogItem = props => {
     const addToCart = (id) => {
         console.log(id);
     }
+
+    const {user} = useContext(Context)
+  console.log(user.isAuth)
 
     return (
             <article
@@ -17,13 +22,15 @@ const CatalogItem = props => {
                             alt={product.title}/>
                         <div
                             className="flex items-center space-x-1.5 rounded-lg bg-primary-700 hover:bg-primary-800 px-4 py-1.5 text-white duration-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
-                                <path strokeLinecap="round" strokeLinejoin="round"
-                                      d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                            </svg>
+                            {user.isAuth ? <>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                          d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                </svg>
+                                <button type={'button'} className="text-sm" onClick={() => addToCart(product.id)}>Добавить в Любимое</button>
+                            </> : <Link to={tgChannel} className="block text-gray-700 lg:hover:text-primary-700 dark:text-white lg:dark:hover:text-white dark:hover:text-white">Зарегистрироваться!</Link>}
 
-                            <button type={'button'} className="text-sm" onClick={() => addToCart(product.id)}>Добавить в Любимое</button>
                         </div>
                     </div>
 
@@ -37,13 +44,16 @@ const CatalogItem = props => {
 
                             <div
                                 className="flex items-center space-x-1.5 rounded-lg bg-primary-700 hover:bg-primary-800 px-4 py-1.5 text-white duration-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                          d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                                </svg>
 
-                                <button type={'button'} className="text-sm" onClick={() => addToCart(product.id)}>Добавить в Любимое</button>
+
+                                {user.isAuth ? <>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                    </svg>
+                                    <button type={'button'} className="text-sm" onClick={() => addToCart(product.id)}>Добавить в Любимое</button>
+                                </> : <Link to={tgChannel} className="block text-gray-700 lg:hover:text-primary-700 dark:text-white lg:dark:hover:text-white dark:hover:text-white">Зарегистрироваться!</Link>}
                             </div>
                         </div>
                     </div>

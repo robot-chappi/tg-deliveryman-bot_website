@@ -1,7 +1,7 @@
 import './App.css';
 import 'aos/dist/aos.css';
 // import {useEffect, useState} from "react";
-import {useEffect} from "react";
+import {useContext, useEffect} from 'react'
 import {useTelegram} from "./hooks/useTelegram";
 import {Route, Routes} from "react-router-dom";
 import AOS from 'aos';
@@ -58,11 +58,14 @@ import CreateFAQs from "./components/Admin/CRUD/FAQs/CreateFAQs";
 import ReviewFAQs from "./components/Admin/CRUD/FAQs/ReviewFAQs";
 import EditFAQs from "./components/Admin/CRUD/FAQs/EditFAQs";
 import UserFAQ from "./components/UserFAQ/UserFAQ";
+import {Context} from './index'
 // import AppContext from "./context";
 // import axios from "axios";
 
 function App() {
     const {tg} = useTelegram();
+    const {user} = useContext(Context)
+    console.log(process.env.REACT_APP_API_URL)
     // const [items, setItems] = useState([]);
     // const [cartItems, setCartItems] = useState([]);
     // const [favorites, setFavorites] = useState([]);
@@ -102,10 +105,14 @@ function App() {
                     <Route index element={<Main/>}/>
                     <Route path={'/catalog'} element={<Catalog/>}/>
                     <Route path={'/faq_users'} element={<UserFAQ/>}/>
-                    <Route path={'/order'} element={<Order/>}/>
-                    <Route path={'/payment'} element={<Payment/>}/>
-                    <Route path={'/admin'} element={<Admin/>}>
+                    {user.isAuth ? <>
+                        <Route path={'/order'} element={<Order/>}/>
+                        <Route path={'/payment'} element={<Payment/>}/>
+                    </> : <></>}
+
+                    {user.isAdmin ? <Route path={'/admin'} element={<Admin/>}>
                         <Route path={'/admin'} element={<Dashboard/>}/>
+                        <Route path={'/admin/auth'} element={<Auth/>}/>
                         <Route path={'/admin/products'} element={<IndexProducts/>}>
                             <Route path={'/admin/products'} element={<Products/>}/>
                             <Route path={'/admin/products/create'} element={<CreateProducts/>}/>
@@ -158,8 +165,9 @@ function App() {
                             <Route path={'/admin/orders'} element={<Orders/>}/>
                             <Route path={'/admin/orders/show/:id'} element={<ReviewOrders/>}/>
                         </Route>
-                        <Route path={'/admin/auth'} element={<Auth/>}/>
-                    </Route>
+                    </Route> : <></>
+                    }
+
                     <Route path={'/product/:productId'} element={<ProductItem/>}/>
                     <Route path={'*'} element={<Page404/>}/>
                 </Routes>

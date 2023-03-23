@@ -1,3 +1,5 @@
+export const tgChannel = 'https://t.me/JSPracticeChatBot';
+
 export const barChartDataDailyTraffic = [
     {
         name: "Клиенты",

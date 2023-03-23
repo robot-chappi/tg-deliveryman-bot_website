@@ -1,12 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react'
 import './ProductItem.css';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
+import {Context} from '../../index'
+import {tgChannel} from '../../variables/charts'
 
 const ProductItem = () => {
     const {productId} = useParams();
     const navigate = useNavigate();
+    const {user} = useContext(Context);
 
     console.log(productId)
 
@@ -39,18 +42,33 @@ const ProductItem = () => {
                     <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Тип: {product.type}</p>
                     <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Вес: {product.weight}г</p>
                     <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Цена: {product.price}₽</p>
-                    <Link
+                    {user.isAuth ?
+                      <Link
                         data-aos={"fade-right"} data-aos-duration={"1000"}
                         to={"catalog"}
                         className="inline-flex mt-5 items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900">
-                        Сделать заказ
-                        <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd"
-                                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                                  clipRule="evenodd"></path>
-                        </svg>
-                    </Link>
+                          Сделать заказ
+                          <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                               xmlns="http://www.w3.org/2000/svg">
+                              <path fillRule="evenodd"
+                                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                    clipRule="evenodd"></path>
+                          </svg>
+                      </Link> :
+                      <Link
+                        data-aos={"fade-right"} data-aos-duration={"1000"}
+                        to={tgChannel}
+                        className="inline-flex mt-5 items-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900">
+                          Зарегистрироваться
+                          <svg className="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                               xmlns="http://www.w3.org/2000/svg">
+                              <path fillRule="evenodd"
+                                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                    clipRule="evenodd"></path>
+                          </svg>
+                      </Link>
+                    }
+
                 </div>
             </div>
         </section>
