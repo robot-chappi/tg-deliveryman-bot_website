@@ -1,12 +1,12 @@
 import {$authHost, $host} from "./index";
 import jwt_decode from "jwt-decode";
 
-export const registration = async (user) => {
+export const createUser = async (user) => {
   const {data} = await $host.post('api/user/', user)
   return data
 }
 
-export const getToken = async (chatId) => {
+export const getUserToken = async (chatId) => {
   const {data} = await $host.post('api/user/token/' + chatId)
   localStorage.setItem('token', data.token)
   return jwt_decode(data.token)
@@ -15,4 +15,19 @@ export const getToken = async (chatId) => {
 export const getUser = async (id) => {
   const {data} = await $authHost.get('api/user/' + id )
   return data
+}
+
+export const getUsers = async () => {
+  const {data} = await $authHost.get('api/user/all')
+  return data;
+}
+
+export const deleteUser = async (id) => {
+  const {data} = await $authHost.delete('api/user/' + id)
+  return data;
+}
+
+export const patchUser = async (id, user) => {
+  const {data} = await $authHost.patch('api/user/' + id, user)
+  return data;
 }
