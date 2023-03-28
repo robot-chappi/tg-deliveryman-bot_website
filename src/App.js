@@ -59,43 +59,42 @@ import ReviewFAQs from "./components/Admin/CRUD/FAQs/ReviewFAQs";
 import EditFAQs from "./components/Admin/CRUD/FAQs/EditFAQs";
 import UserFAQ from "./components/UserFAQ/UserFAQ";
 import {Context} from './index'
+import {getUserToken} from './http/userAPI'
 // import AppContext from "./context";
 // import axios from "axios";
 
 function App() {
-    const {tg} = useTelegram();
+    const {tg, userTG} = useTelegram();
     const {user} = useContext(Context)
-    console.log(process.env.REACT_APP_API_URL)
-    // const [items, setItems] = useState([]);
-    // const [cartItems, setCartItems] = useState([]);
-    // const [favorites, setFavorites] = useState([]);
-    // const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         tg.ready();
-        // async function fetchData() {
-        //     try {
-        //         const [cartResponse, favoritesResponse, itemsResponse] = await Promise.all([
-        //             axios.get('https://60d62397943aa60017768e77.mockapi.io/cart'),
-        //             axios.get('https://60d62397943aa60017768e77.mockapi.io/favorites'),
-        //             axios.get('https://60d62397943aa60017768e77.mockapi.io/items'),
-        //         ]);
-        //
-        //         setIsLoading(false);
-        //         setCartItems(cartResponse.data);
-        //         setFavorites(favoritesResponse.data);
-        //         setItems(itemsResponse.data);
-        //
-        //         console.log(items)
-        //     } catch (error) {
-        //         alert('Ошибка при запросе данных ;(');
-        //         console.error(error);
-        //     }
-        // }
+        const initialToken = localStorage.getItem('token');
+
+        async function getToken() {
+            try {
+                let token;
+                if (!initialToken) {
+                    token = await getUserToken('895411068');
+                } else {
+                    token = initialToken;
+                }
+                // const token = await getUserToken('userTG?.id');
+                if (token) {
+                    user.setIsAuth(true);
+                    user.setIsAdmin(token.role === 'admin' ? true : false)
+                    return user.setUser(token)
+                }
+                user.setIsAuth(false)
+                user.setIsAdmin(false)
+            } catch (e) {
+                // alert('Так как вы не авторизовались через нашего бота, у вас будут ограниченные функции')
+            }
+        }
         AOS.init({
             once: true
         });
-        // fetchData();
+        getToken();
     }, [tg])
 
     return (
