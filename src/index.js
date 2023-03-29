@@ -5,6 +5,7 @@ import './index.css';
 import {BrowserRouter} from "react-router-dom";
 import UserStore from './store/UserStore'
 import ProductStore from './store/ProductStore'
+import MainStore from './store/MainStore'
 
 export const Context = createContext(null)
 
@@ -12,6 +13,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
       <Context.Provider value={{
+        main: new MainStore(),
         user: new UserStore(),
         products: new ProductStore()
       }}>

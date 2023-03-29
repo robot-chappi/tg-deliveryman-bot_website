@@ -1,7 +1,7 @@
 import './App.css';
 import 'aos/dist/aos.css';
 // import {useEffect, useState} from "react";
-import {useContext, useEffect} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useTelegram} from "./hooks/useTelegram";
 import {Route, Routes} from "react-router-dom";
 import AOS from 'aos';
@@ -60,119 +60,108 @@ import EditFAQs from "./components/Admin/CRUD/FAQs/EditFAQs";
 import UserFAQ from "./components/UserFAQ/UserFAQ";
 import {Context} from './index'
 import {getUserToken} from './http/userAPI'
-// import AppContext from "./context";
-// import axios from "axios";
+import {observer} from 'mobx-react-lite'
 
-function App() {
+const App = observer(() => {
+    // eslint-disable-next-line no-unused-vars
     const {tg, userTG} = useTelegram();
-    const {user} = useContext(Context)
-
+    const {user} = useContext(Context);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         tg.ready();
-        const initialToken = localStorage.getItem('token');
 
-        async function getToken() {
-            try {
-                let token;
-                if (!initialToken) {
-                    token = await getUserToken('895411068');
-                } else {
-                    token = initialToken;
-                }
-                // const token = await getUserToken('userTG?.id');
-                if (token) {
-                    user.setIsAuth(true);
-                    user.setIsAdmin(token.role === 'admin' ? true : false)
-                    return user.setUser(token)
-                }
-                user.setIsAuth(false)
-                user.setIsAdmin(false)
-            } catch (e) {
-                // alert('Так как вы не авторизовались через нашего бота, у вас будут ограниченные функции')
-            }
-        }
+        getUserToken('895411068').then(data => {
+            user.setIsAuth(true);
+            user.setIsAdmin(data.role === 'admin' ? true : false)
+            user.setUser(data)
+        }).finally(() => setLoading(false))
+
         AOS.init({
             once: true
         });
-        getToken();
-    }, [tg])
+        setLoading(false)
+    }, [tg, user])
+
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div className="App">
-            {/*<AppContext.Provider value={{items}}>*/}
-                <Routes>
-                    <Route index element={<Main/>}/>
-                    <Route path={'/catalog'} element={<Catalog/>}/>
-                    <Route path={'/faq_users'} element={<UserFAQ/>}/>
-                    {user.isAuth ? <>
-                        <Route path={'/order'} element={<Order/>}/>
-                        <Route path={'/payment'} element={<Payment/>}/>
-                    </> : <></>}
+            <Routes>
+                <Route index element={<Main/>}/>
+                <Route path={'/catalog'} element={<Catalog/>}/>
+                <Route path={'/faq_users'} element={<UserFAQ/>}/>
+                {user.isAuth ? <>
+                    <Route path={'/order'} element={<Order/>}/>
+                    <Route path={'/payment'} element={<Payment/>}/>
+                </> : <></>}
 
-                    {user.isAdmin ? <Route path={'/admin'} element={<Admin/>}>
-                        <Route path={'/admin'} element={<Dashboard/>}/>
-                        <Route path={'/admin/auth'} element={<Auth/>}/>
-                        <Route path={'/admin/products'} element={<IndexProducts/>}>
-                            <Route path={'/admin/products'} element={<Products/>}/>
-                            <Route path={'/admin/products/create'} element={<CreateProducts/>}/>
-                            <Route path={'/admin/products/show/:id'} element={<ReviewProduct/>}/>
-                            <Route path={'/admin/products/edit/:id'} element={<EditProducts/>}/>
-                        </Route>
-                        <Route path={'/admin/categories'} element={<IndexCategories/>}>
-                            <Route path={'/admin/categories'} element={<Categories/>}/>
-                            <Route path={'/admin/categories/create'} element={<CreateCategories/>}/>
-                            <Route path={'/admin/categories/show/:id'} element={<ReviewCategories/>}/>
-                            <Route path={'/admin/categories/edit/:id'} element={<EditCategories/>}/>
-                        </Route>
-                        <Route path={'/admin/types'} element={<IndexTypes/>}>
-                            <Route path={'/admin/types'} element={<Types/>}/>
-                            <Route path={'/admin/types/create'} element={<CreateTypes/>}/>
-                            <Route path={'/admin/types/show/:id'} element={<ReviewTypes/>}/>
-                            <Route path={'/admin/types/edit/:id'} element={<EditTypes/>}/>
-                        </Route>
-                        <Route path={'/admin/roles'} element={<IndexRoles/>}>
-                            <Route path={'/admin/roles'} element={<Roles/>}/>
-                            <Route path={'/admin/roles/create'} element={<CreateRoles/>}/>
-                            <Route path={'/admin/roles/show/:id'} element={<ReviewRoles/>}/>
-                            <Route path={'/admin/roles/edit/:id'} element={<EditRoles/>}/>
-                        </Route>
-                        <Route path={'/admin/users'} element={<IndexUsers/>}>
-                            <Route path={'/admin/users'} element={<Users/>}/>
-                            <Route path={'/admin/users/create'} element={<CreateUsers/>}/>
-                            <Route path={'/admin/users/show/:id'} element={<ReviewUsers/>}/>
-                            <Route path={'/admin/users/edit/:id'} element={<EditUsers/>}/>
-                        </Route>
-                        <Route path={'/admin/tariff'} element={<IndexTariff/>}>
-                            <Route path={'/admin/tariff'} element={<Tariff/>}/>
-                            <Route path={'/admin/tariff/create'} element={<CreateTariff/>}/>
-                            <Route path={'/admin/tariff/show/:id'} element={<ReviewTariff/>}/>
-                            <Route path={'/admin/tariff/edit/:id'} element={<EditTariff/>}/>
-                        </Route>
-                        <Route path={'/admin/privileges'} element={<IndexPrivileges/>}>
-                            <Route path={'/admin/privileges'} element={<Privileges/>}/>
-                            <Route path={'/admin/privileges/create'} element={<CreatePrivileges/>}/>
-                            <Route path={'/admin/privileges/show/:id'} element={<ReviewPrivileges/>}/>
-                            <Route path={'/admin/privileges/edit/:id'} element={<EditPrivileges/>}/>
-                        </Route>
-                        <Route path={'/admin/faqs'} element={<IndexFAQs/>}>
-                            <Route path={'/admin/faqs'} element={<FAQs/>}/>
-                            <Route path={'/admin/faqs/create'} element={<CreateFAQs/>}/>
-                            <Route path={'/admin/faqs/show/:id'} element={<ReviewFAQs/>}/>
-                            <Route path={'/admin/faqs/edit/:id'} element={<EditFAQs/>}/>
-                        </Route>
-                        <Route path={'/admin/orders'} element={<IndexOrders/>}>
-                            <Route path={'/admin/orders'} element={<Orders/>}/>
-                            <Route path={'/admin/orders/show/:id'} element={<ReviewOrders/>}/>
-                        </Route>
-                    </Route> : <></>
-                    }
+                {user.isAdmin ? <Route path={'/admin'} element={<Admin/>}>
+                    <Route path={'/admin'} element={<Dashboard/>}/>
+                    <Route path={'/admin/auth'} element={<Auth/>}/>
+                    <Route path={'/admin/products'} element={<IndexProducts/>}>
+                        <Route path={'/admin/products'} element={<Products/>}/>
+                        <Route path={'/admin/products/create'} element={<CreateProducts/>}/>
+                        <Route path={'/admin/products/show/:id'} element={<ReviewProduct/>}/>
+                        <Route path={'/admin/products/edit/:id'} element={<EditProducts/>}/>
+                    </Route>
+                    <Route path={'/admin/categories'} element={<IndexCategories/>}>
+                        <Route path={'/admin/categories'} element={<Categories/>}/>
+                        <Route path={'/admin/categories/create'} element={<CreateCategories/>}/>
+                        <Route path={'/admin/categories/show/:id'} element={<ReviewCategories/>}/>
+                        <Route path={'/admin/categories/edit/:id'} element={<EditCategories/>}/>
+                    </Route>
+                    <Route path={'/admin/types'} element={<IndexTypes/>}>
+                        <Route path={'/admin/types'} element={<Types/>}/>
+                        <Route path={'/admin/types/create'} element={<CreateTypes/>}/>
+                        <Route path={'/admin/types/show/:id'} element={<ReviewTypes/>}/>
+                        <Route path={'/admin/types/edit/:id'} element={<EditTypes/>}/>
+                    </Route>
+                    <Route path={'/admin/roles'} element={<IndexRoles/>}>
+                        <Route path={'/admin/roles'} element={<Roles/>}/>
+                        <Route path={'/admin/roles/create'} element={<CreateRoles/>}/>
+                        <Route path={'/admin/roles/show/:id'} element={<ReviewRoles/>}/>
+                        <Route path={'/admin/roles/edit/:id'} element={<EditRoles/>}/>
+                    </Route>
+                    <Route path={'/admin/users'} element={<IndexUsers/>}>
+                        <Route path={'/admin/users'} element={<Users/>}/>
+                        <Route path={'/admin/users/create'} element={<CreateUsers/>}/>
+                        <Route path={'/admin/users/show/:id'} element={<ReviewUsers/>}/>
+                        <Route path={'/admin/users/edit/:id'} element={<EditUsers/>}/>
+                    </Route>
+                    <Route path={'/admin/tariff'} element={<IndexTariff/>}>
+                        <Route path={'/admin/tariff'} element={<Tariff/>}/>
+                        <Route path={'/admin/tariff/create'} element={<CreateTariff/>}/>
+                        <Route path={'/admin/tariff/show/:id'} element={<ReviewTariff/>}/>
+                        <Route path={'/admin/tariff/edit/:id'} element={<EditTariff/>}/>
+                    </Route>
+                    <Route path={'/admin/privileges'} element={<IndexPrivileges/>}>
+                        <Route path={'/admin/privileges'} element={<Privileges/>}/>
+                        <Route path={'/admin/privileges/create'} element={<CreatePrivileges/>}/>
+                        <Route path={'/admin/privileges/show/:id'} element={<ReviewPrivileges/>}/>
+                        <Route path={'/admin/privileges/edit/:id'} element={<EditPrivileges/>}/>
+                    </Route>
+                    <Route path={'/admin/faqs'} element={<IndexFAQs/>}>
+                        <Route path={'/admin/faqs'} element={<FAQs/>}/>
+                        <Route path={'/admin/faqs/create'} element={<CreateFAQs/>}/>
+                        <Route path={'/admin/faqs/show/:id'} element={<ReviewFAQs/>}/>
+                        <Route path={'/admin/faqs/edit/:id'} element={<EditFAQs/>}/>
+                    </Route>
+                    <Route path={'/admin/orders'} element={<IndexOrders/>}>
+                        <Route path={'/admin/orders'} element={<Orders/>}/>
+                        <Route path={'/admin/orders/show/:id'} element={<ReviewOrders/>}/>
+                    </Route>
+                </Route> : <></>
+                }
 
-                    <Route path={'/product/:productId'} element={<ProductItem/>}/>
-                    <Route path={'*'} element={<Page404/>}/>
-                </Routes>
-            {/*</AppContext.Provider>*/}
+                <Route path={'/product/:productId'} element={<ProductItem/>}/>
+                <Route path={'*'} element={<Page404/>}/>
+            </Routes>
         </div>
     );
-}
+})
 
 export default App;
