@@ -21,6 +21,6 @@ export const deleteTariff = async (id) => {
 }
 
 export const patchTariff = async (id, tariff) => {
-  const {data} = await $authHost.delete('api/tariff/' + id, tariff)
+  const {data} = await $authHost.patch('api/tariff/' + id, tariff)
   return data
 }

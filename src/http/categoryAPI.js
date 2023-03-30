@@ -21,6 +21,6 @@ export const deleteCategory = async (id) => {
 }
 
 export const patchCategory = async (id, category) => {
-  const {data} = await $authHost.delete('api/category/' + id, category)
+  const {data} = await $authHost.patch('api/category/' + id, category)
   return data
 }

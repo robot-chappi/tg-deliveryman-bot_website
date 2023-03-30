@@ -1,14 +1,13 @@
 import {makeAutoObservable} from "mobx";
-import {catalogData, categories, types } from '../components/GenerationWeeklyMealPlan/mockdata'
 
 export default class ProductStore {
   constructor() {
     // this._types = []
-    this._types = types
+    this._types = []
     // this._categories = []
-    this._categories = categories
+    this._categories = []
     // this._products = []
-    this._products = catalogData
+    this._products = []
     this._selectedType = {}
     this._selectedCategory = {}
     this._page = 1
@@ -54,7 +53,7 @@ export default class ProductStore {
   get selectedType() {
     return this._selectedType
   }
-  get selectedBrand() {
+  get selectedCategory() {
     return this._selectedCategory
   }
   get totalCount() {

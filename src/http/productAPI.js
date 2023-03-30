@@ -1,26 +1,31 @@
-// import {$authHost, $host} from "./index";
-//
-// export const createCategory = async (category) => {
-//   const {data} = await $authHost.post('api/category/', category)
-//   return data
-// }
-//
-// export const getCategories = async () => {
-//   const {data} = await $host.get('api/category/all')
-//   return data
-// }
-//
-// export const getCategory = async (id) => {
-//   const {data} = await $host.get('api/category/' + id)
-//   return data
-// }
-//
-// export const deleteCategory = async (id) => {
-//   const {data} = await $authHost.delete('api/category/' + id)
-//   return data
-// }
-//
-// export const patchCategory = async (id, category) => {
-//   const {data} = await $authHost.delete('api/category/' + id, category)
-//   return data
-// }
+import {$authHost, $host} from "./index";
+
+export const createProduct = async (product) => {
+  const {data} = await $authHost.post('api/product/', product)
+  return data
+}
+
+export const getProducts = async () => {
+  const {data} = await $host.get('api/product/all')
+  return data
+}
+
+export const getPaginationProducts = async (categoryId, typeId, limit, page) => {
+  const {data} = await $host.get('api/product/pagination', {params: {categoryId: categoryId, typeId: typeId, limit: limit, page: page}})
+  return data
+}
+
+export const getProduct = async (id) => {
+  const {data} = await $host.get('api/product/' + id)
+  return data
+}
+
+export const deleteProduct = async (id) => {
+  const {data} = await $authHost.delete('api/product/' + id)
+  return data
+}
+
+export const patchProduct = async (id, product) => {
+  const {data} = await $authHost.patch('api/product/' + id, product)
+  return data
+}
