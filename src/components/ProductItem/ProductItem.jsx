@@ -1,27 +1,29 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import './ProductItem.css';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import {Context} from '../../index'
 import {tgChannel} from '../../variables/charts'
+import {observer} from 'mobx-react-lite'
+import {getProduct} from '../../http/productAPI'
 
-const ProductItem = () => {
+const ProductItem = observer(() => {
+    const [loading, setLoading] = useState(true);
     const {productId} = useParams();
     const navigate = useNavigate();
-    const {user} = useContext(Context);
+    const {user, products} = useContext(Context);
 
-    console.log(productId)
+    useEffect(() => {
+        getProduct(productId).then(data => products.setProduct(data)).finally(() => setLoading(false))
+    }, [])
 
-    const product = {
-        id: 1,
-        title: "Суп с креветками на гриле",
-        type: "Правильное питание",
-        image: "https://eda.yandex.ru/images/1370147/d2f69ce626823d7b46a9805c92470e46-1100x825.jpg",
-        description: "Суп – это один из лучших путей к благосостоянию и удовольствию. Это своего рода лакомство, которое может поднять дух даже в трудные минуты. Суп – это гармоничное произведение искусства составления меню, в котором сочетаются ароматы и освежающие сочетания.",
-        weight: 350,
-        price: 500
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
     }
+
     return (
         <div>
         <Header/>
@@ -30,18 +32,39 @@ const ProductItem = () => {
             <div
                 className="gap-8 mb-10 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
                 <img data-aos={"fade-down"} data-aos-duration={"1000"} className="w-full dark:hidden"
-                     src={`${product.image}`}
+                     src={products.product.product.image.includes('http') ? products.product.product.image : `${process.env.REACT_APP_API_URL+'/'+products.product.product.image}`}
                      alt={'dashboard'}/>
                 <img data-aos={"fade-down"} data-aos-duration={"1000"} className="w-full hidden dark:block"
-                     src={`${product.image}`}
+                     src={products.product.product.image.includes('http') ? products.product.product.image : `${process.env.REACT_APP_API_URL+'/'+products.product.product.image}`}
                      alt={'dashboard'}/>
                 <div data-aos={"fade-up"} data-aos-duration={"1000"} className="mt-4 md:mt-0">
-                    <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{product.title}</h2>
-                    <p className="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">{product.description}</p>
+                    <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{products.product.product.title}</h2>
+                    <p className="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">{products.product.product.description}</p>
+                    <hr className="mb-3 border-gray-500 md:text-lg dark:border-gray-400"/>
+                    <div>
+                        <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+                            Ингредиенты: </h2>
+                        <ul className={'mb-6 block max-w-md space-y-1 text-gray-500 list-none list-inside dark:text-gray-400'}>
+                            {products.product.ingredients.map(i => {
+                                return <li>
+                                    <div className={'gap-1 flex items-center'}>
+                                        <p>{i.title}</p>
+                                        <button type="button"
+                                                className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Нравится
+                                        </button>
+                                        <button type="button"
+                                                className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Не нравится
+                                        </button>
+                                    </div>
+                                </li>
+                            })}
+                        </ul>
+                    </div>
                     <hr className="mb-6 border-gray-500 md:text-lg dark:border-gray-400"/>
-                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Тип: {product.type}</p>
-                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Вес: {product.weight}г</p>
-                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Цена: {product.price}₽</p>
+                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Категория: {products.product.product.category.title}</p>
+                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Тип: {products.product.product.type.title}</p>
+                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Вес: {products.product.product.weight}г</p>
+                    <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Цена: {products.product.product.price}₽</p>
                     {user.isAuth ?
                       <Link
                         data-aos={"fade-right"} data-aos-duration={"1000"}
@@ -75,6 +98,6 @@ const ProductItem = () => {
         <Footer/>
         </div>
     );
-};
+});
 
 export default ProductItem;

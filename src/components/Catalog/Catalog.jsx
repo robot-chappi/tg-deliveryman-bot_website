@@ -28,6 +28,7 @@ const Catalog = observer(() => {
         })
     }, [products.page, products.selectedType, products.selectedCategory])
 
+
     return (
         <div>
             <Header/>
@@ -38,17 +39,17 @@ const Catalog = observer(() => {
 
             <div className={'text-center mt-4 mb-10'}>
                 <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Наши категории</h2>
-                <ul className="text-gray-500 list-none dark:text-gray-400">
+                <ul className="text-gray-500 flex flex-wrap gap-2 px-4 list-none dark:text-gray-400">
                     <li>
-                        <button type={'submit'} onClick={() => products.setSelectedCategory(null)} rel="noopener noreferrer"
-                                className="font-normal text-gray-900 dark:text-white">
+                        <button type={'submit'} onClick={() => products.setSelectedCategory({id: null})} rel="noopener noreferrer"
+                                className={`text-white ${products.selectedCategory.id === null ? 'bg-gray-600' : 'bg-gray-800 dark:bg-gray-800'} hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700`}>
                             <span>Все продукты</span>
                         </button>
                     </li>
                     {products.categories.map((item) => {
                         return <li key={item.id}>
-                            <button type={'submit'} onClick={() => products.setSelectedCategory(item.id)} rel="noopener noreferrer"
-                                       className="font-normal text-gray-500 dark:text-gray-300">
+                            <button type={'submit'} onClick={() => products.setSelectedCategory(item)} rel="noopener noreferrer"
+                                       className={`text-white ${products.selectedCategory.id === item.id ? 'bg-gray-600' : 'bg-gray-800 dark:bg-gray-800'} hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700`}>
                             <span>{item.title}</span>
                         </button>
                         </li>
@@ -59,17 +60,17 @@ const Catalog = observer(() => {
 
             <div className={'text-center mt-4 mb-10'}>
                 <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Наши типы</h2>
-                <ul className="text-gray-500 list-none dark:text-gray-400">
+                <ul className="text-gray-500 flex flex-wrap gap-2 px-4 list-none dark:text-gray-400">
                     <li>
-                        <button type={'submit'} onClick={() => products.setSelectedType(null)} rel="noopener noreferrer"
-                                className="font-normal text-gray-900 dark:text-white">
+                        <button type={'submit'} onClick={() => products.setSelectedType({id: null})} rel="noopener noreferrer"
+                                className={`text-white ${products.selectedType.id === null ? 'bg-gray-600' : 'bg-gray-800 dark:bg-gray-800'} hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700`}>
                             <span>Все типы</span>
                         </button>
                     </li>
                     {products.types.map((item) => {
                         return <li key={item.id}>
-                            <button type={'submit'} onClick={() => products.setSelectedType(item.id)} rel="noopener noreferrer"
-                                    className="font-normal text-gray-500 dark:text-gray-300">
+                            <button type={'submit'} onClick={() => products.setSelectedType(item)} rel="noopener noreferrer"
+                                    className={`text-white ${products.selectedType.id === item.id ? 'bg-gray-600' : 'bg-gray-800 dark:bg-gray-800'} hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700`}>
                                 <span>{item.title}</span>
                             </button>
                         </li>

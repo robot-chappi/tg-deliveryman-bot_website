@@ -2,12 +2,11 @@ import {makeAutoObservable} from "mobx";
 
 export default class ProductStore {
   constructor() {
-    // this._types = []
     this._types = []
-    // this._categories = []
     this._categories = []
-    // this._products = []
     this._products = []
+    this._favoriteproducts = []
+    this._product = {}
     this._selectedType = {}
     this._selectedCategory = {}
     this._page = 1
@@ -24,6 +23,13 @@ export default class ProductStore {
   }
   setProducts(products) {
     this._products = products
+  }
+  setFavoriteProducts(favoriteproducts) {
+    this._favoriteproducts = favoriteproducts
+  }
+
+  setProduct(product) {
+    this._product = product
   }
 
   setSelectedType(type) {
@@ -49,6 +55,12 @@ export default class ProductStore {
   }
   get products() {
     return this._products
+  }
+  get favoriteproducts() {
+    return this._favoriteproducts
+  }
+  get product() {
+    return this._product
   }
   get selectedType() {
     return this._selectedType
