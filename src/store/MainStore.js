@@ -4,6 +4,8 @@ export default class MainStore {
   constructor() {
     this._tariffs = []
     this._faqs = []
+    this._favoriteingredients = []
+    this._unlovedingredients = []
 
     this._pageFaqs = 1
     this._totalCountFaqs = 0
@@ -17,6 +19,12 @@ export default class MainStore {
 
   setFaqs(faqs) {
     this._faqs = faqs
+  }
+  setFavoriteIngredients(favoriteIngredients) {
+    this._favoriteingredients = favoriteIngredients
+  }
+  setUnlovedIngredients(unlovedIngredients) {
+    this._unlovedingredients = unlovedIngredients
   }
 
 
@@ -33,6 +41,12 @@ export default class MainStore {
 
   get faqs() {
     return this._faqs
+  }
+  get favoriteIngredientItems() {
+    return this._favoriteingredients
+  }
+  get unlovedIngredientItems() {
+    return this._unlovedingredients
   }
 
   get totalCountFaqs() {

@@ -7,16 +7,74 @@ import {Context} from '../../index'
 import {tgChannel} from '../../variables/charts'
 import {observer} from 'mobx-react-lite'
 import {getProduct} from '../../http/productAPI'
+import {getMyFavoriteIngredientItem, getMyUnlovedIngredientItem} from '../../http/userAPI'
+import {createFavoriteIngredient, getUserChatFavoriteIngredients} from '../../http/favoriteIngredientAPI'
+import {createUnlovedIngredient, getUserChatUnlovedIngredients} from '../../http/unlovedIngredientAPI'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faThumbsDown, faThumbsUp} from '@fortawesome/free-solid-svg-icons'
 
 const ProductItem = observer(() => {
     const [loading, setLoading] = useState(true);
+    const [textIngredient, setTextIngredient] = useState('');
+    const [addAction, setAddAction] = useState(false);
+    const [favoriteIngItems, setFavoriteIngItems] = useState([]);
+    const [unlovedIngItems, setUnlovedIngItems] = useState([]);
     const {productId} = useParams();
     const navigate = useNavigate();
     const {user, products} = useContext(Context);
 
     useEffect(() => {
+        getUserChatFavoriteIngredients(user.user.chatId).then(data => setFavoriteIngItems(data))
+        getUserChatUnlovedIngredients(user.user.chatId).then(data => setUnlovedIngItems(data))
         getProduct(productId).then(data => products.setProduct(data)).finally(() => setLoading(false))
     }, [])
+
+    useEffect(() => {
+        getUserChatFavoriteIngredients(user.user.chatId).then(data => setFavoriteIngItems(data))
+        getUserChatUnlovedIngredients(user.user.chatId).then(data => setUnlovedIngItems(data))
+    }, [addAction])
+
+    function containsObject(obj, list) {
+        var i;
+        for (i = 0; i < list.length; i++) {
+            if (list[i]?.ingredient.id === obj.id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const addFavoriteIngredient = async (id) => {
+        try {
+            const favoriteIngredientItem = await getMyFavoriteIngredientItem(user.user.chatId);
+            const unlovedIngredientItem = await getMyUnlovedIngredientItem(user.user.chatId);
+            const response = await createFavoriteIngredient({unloved_ingredient_id: unlovedIngredientItem.id, favorite_ingredient_id: favoriteIngredientItem.id, ingredient_id: id})
+            setTextIngredient(response.message)
+            setAddAction(true)
+            setTimeout(() => {
+                setTextIngredient('')
+                setAddAction(false)
+            }, 1500)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const addUnlovedIngredient = async (id) => {
+        try {
+            const unlovedIngredientItem = await getMyUnlovedIngredientItem(user.user.chatId);
+            const favoriteIngredientItem = await getMyFavoriteIngredientItem(user.user.chatId);
+            const response = await createUnlovedIngredient({favorite_ingredient_id: favoriteIngredientItem.id, unloved_ingredient_id: unlovedIngredientItem.id, ingredient_id: id})
+            setTextIngredient(response.message)
+            setAddAction(true)
+            setTimeout(() => {
+                setTextIngredient('')
+                setAddAction(false)
+            }, 1500)
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     if (loading) {
         return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -46,19 +104,25 @@ const ProductItem = observer(() => {
                             Ингредиенты: </h2>
                         <ul className={'mb-6 block max-w-md space-y-1 text-gray-500 list-none list-inside dark:text-gray-400'}>
                             {products.product.ingredients.map(i => {
-                                return <li>
+                                return <li key={i.id}>
                                     <div className={'gap-1 flex items-center'}>
                                         <p>{i.title}</p>
                                         <button type="button"
-                                                className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Нравится
+                                                onClick={() => addFavoriteIngredient(i.id)}
+                                                className={`text-white ${containsObject(i, favoriteIngItems) ? 'bg-green-700 dark:bg-green-600' : 'bg-gray-700 dark:bg-gray-600'} hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:hover:bg-green-700 dark:focus:ring-green-800`}><FontAwesomeIcon icon={faThumbsUp}/>
                                         </button>
                                         <button type="button"
-                                                className="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Не нравится
+                                                onClick={() => addUnlovedIngredient(i.id)}
+                                                className={`text-white ${containsObject(i, unlovedIngItems) ? 'bg-red-700 dark:bg-red-600' : 'bg-gray-700 dark:bg-gray-600'} hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:hover:bg-red-700 dark:focus:ring-red-900`}><FontAwesomeIcon icon={faThumbsDown}/>
                                         </button>
                                     </div>
                                 </li>
                             })}
                         </ul>
+                    </div>
+                    <div className={'flex justify-center'}>
+                        {addAction ? <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">{textIngredient}</p> :
+                          <></>}
                     </div>
                     <hr className="mb-6 border-gray-500 md:text-lg dark:border-gray-400"/>
                     <p className="mb-1 font-light text-gray-900 md:text-lg dark:text-white">Категория: {products.product.product.category.title}</p>

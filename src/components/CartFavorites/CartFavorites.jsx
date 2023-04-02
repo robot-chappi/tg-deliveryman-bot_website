@@ -5,19 +5,56 @@ import Header from '../Header/Header'
 import Footer from '../Footer/Footer'
 import {deleteUserFavoriteProduct, getUserChatFavoriteProducts} from '../../http/favoriteProductAPI'
 import {Link} from 'react-router-dom'
+import {
+  createFavoriteIngredient,
+  deleteUserFavoriteIngredient,
+  getUserChatFavoriteIngredients
+} from '../../http/favoriteIngredientAPI'
+import {
+  createUnlovedIngredient,
+  deleteUserUnlovedIngredient,
+  getUserChatUnlovedIngredients
+} from '../../http/unlovedIngredientAPI'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faClose} from '@fortawesome/free-solid-svg-icons'
+import {getMyFavoriteIngredientItem, getMyUnlovedIngredientItem} from '../../http/userAPI'
 
 const CartFavorites = observer(() => {
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(false);
+  const [favoriteIngItems, setFavoriteIngItems] = useState([]);
+  const [unlovedIngItems, setUnlovedIngItems] = useState([]);
   const {user, products} = useContext(Context);
 
   useEffect(() => {
+    getUserChatFavoriteIngredients(user.user.chatId).then(data => setFavoriteIngItems(data))
+    getUserChatUnlovedIngredients(user.user.chatId).then(data => setUnlovedIngItems(data))
     getUserChatFavoriteProducts(user.user.chatId).then(data => products.setFavoriteProducts(data)).finally(() => setLoading(false))
   }, [reload])
 
   const removeFavoriteProduct = async (favoriteProduct, id) => {
     await deleteUserFavoriteProduct(Number(favoriteProduct), Number(id));
     setReload(true);
+  }
+
+  const deleteFavoriteIngredient = async (id) => {
+    try {
+      const favoriteIngredientItem = await getMyFavoriteIngredientItem(user.user.chatId);
+      await deleteUserFavoriteIngredient(favoriteIngredientItem.id, id)
+      setReload(!reload);
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const deleteUnlovedIngredient = async (id) => {
+    try {
+      const unlovedIngredientItem = await getMyUnlovedIngredientItem(user.user.chatId);
+      await deleteUserUnlovedIngredient(unlovedIngredientItem.id, id)
+      setReload(!reload);
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   if (loading) {
@@ -32,7 +69,7 @@ const CartFavorites = observer(() => {
       <section className="bg-white dark:bg-gray-900">
         <h1 className="py-7 text-center text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
           Любимое</h1>
-        <div>
+        <div className={'bg-white dark:bg-gray-900'}>
             <h2
               className="mb-4 pl-3 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
               Любимые продукты</h2>
@@ -67,6 +104,44 @@ const CartFavorites = observer(() => {
               </div>
             })}
             </div>
+        <div className={'pb-7 bg-white dark:bg-gray-900'}>
+          <h2
+            className="mb-4 pl-3 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
+            Любимые ингридиенты</h2>
+            <ul className={'block max-w-md space-y-1 text-gray-500 list-none list-inside dark:text-gray-400'}>
+              {favoriteIngItems.map(i => {
+                return <li className={'pl-2'} key={i.ingredient.id}>
+                  <div className={'gap-1 flex items-center'}>
+                    <p>{i.ingredient.title}</p>
+                    <button type="button"
+                            onClick={() => deleteFavoriteIngredient(i.id)}
+                            className={'text-white bg-gray-700 dark:bg-gray-600 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:hover:bg-green-700 dark:focus:ring-green-800'}><FontAwesomeIcon icon={faClose}/>
+                    </button>
+                  </div>
+                </li>
+              })}
+            </ul>
+            {favoriteIngItems.length < 1 ? <p className={'text-center text-gray-500 dark:text-gray-400'}>Любимых ингридиентов нету</p> : <></>}
+        </div>
+        <div className={'pb-7 bg-white dark:bg-gray-900'}>
+          <h2
+            className="mb-4 pl-3 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
+            Нелюбимые ингридиенты</h2>
+          <ul className={'block max-w-md space-y-1 text-gray-500 list-none list-inside dark:text-gray-400'}>
+            {unlovedIngItems.map(i => {
+              return <li className={'pl-2'} key={i.ingredient.id}>
+                <div className={'gap-1 flex items-center'}>
+                  <p>{i.ingredient.title}</p>
+                  <button type="button"
+                          onClick={() => deleteUnlovedIngredient(i.id)}
+                          className={'text-white bg-gray-700 dark:bg-gray-600 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-1.5 py-1 text-center dark:hover:bg-red-700 dark:focus:ring-red-900'}><FontAwesomeIcon icon={faClose}/>
+                  </button>
+                </div>
+              </li>
+            })}
+          </ul>
+          {unlovedIngItems.length < 1 ? <p className={'text-center text-gray-500 dark:text-gray-400'}>Нелюбимых ингридиентов нету</p> : <></>}
+        </div>
         </section>
       <Footer/>
     </div>
