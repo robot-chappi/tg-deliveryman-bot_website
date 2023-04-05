@@ -3,9 +3,9 @@ import {catalogData} from "./mockdata";
 function getMealPlan(userData) {
   try {
     const favoriteCategory = userData.favoriteCategory;
-    const unlovedFood = userData.unlovedFood;
-    const foodFromFavorite = userData.foodFromFavorite;
-    const products = catalogData;
+    const unlovedIngredients = userData.unlovedIngredients;
+    const favoriteProducts = userData.favoriteProducts;
+    const products = userData.products;
 
 
     let mealPlan = {
@@ -18,7 +18,7 @@ function getMealPlan(userData) {
       "Воскресенье": []
     };
 
-    let meal = [...foodFromFavorite];
+    let meal = [...favoriteProducts];
     let morning = [];
     let afternoon = [];
     let night = [];
@@ -31,7 +31,7 @@ function getMealPlan(userData) {
 
 
     const myArrayFiltered = meal.filter((el) => {
-      return unlovedFood.some((f) => {
+      return unlovedIngredients.some((f) => {
         return el.ingredients.some((i) => {
           return f.id === i.id;
         })
