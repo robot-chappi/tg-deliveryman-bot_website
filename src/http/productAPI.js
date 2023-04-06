@@ -10,6 +10,11 @@ export const getProducts = async () => {
   return data
 }
 
+export const getProductsWithIngredients = async () => {
+  const {data} = await $host.get('api/product/all/ingredients')
+  return data
+}
+
 export const getPaginationProducts = async (categoryId, typeId, limit, page) => {
   const {data} = await $host.get('api/product/pagination', {params: {categoryId: categoryId, typeId: typeId, limit: limit, page: page}})
   return data

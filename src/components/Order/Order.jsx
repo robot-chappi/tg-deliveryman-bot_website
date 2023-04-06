@@ -11,10 +11,11 @@ import {getUserChatUnlovedIngredients} from '../../http/unlovedIngredientAPI'
 import {getUserChatFavoriteProducts} from '../../http/favoriteProductAPI'
 import {getIngredients} from '../../http/ingredientsAPI'
 import {getTypeOrders} from '../../http/typeOrderAPI'
-import {getProducts} from '../../http/productAPI'
+import {getProducts, getProductsWithIngredients} from '../../http/productAPI'
 import {getUserOrder} from '../../http/orderAPI'
 import {createMealPlanProducts} from '../../http/mealPlanAPI'
 import {useNavigate} from 'react-router-dom'
+import * as events from 'events'
 
 const Order = observer(() => {
     const [fullname, setFullname] = useState('');
@@ -32,6 +33,7 @@ const Order = observer(() => {
     const [allTypeOrders, setAllTypeOrders] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
     const [allProducts, setAllProducts] = useState([]);
+    const [allProductsWithIngredients, setAllProductsWithIngredients] = useState([]);
     const [allFavoriteProducts, setAllFavoriteProducts] = useState([]);
     const [allIngredients, setAllIngredients] = useState([]);
 
@@ -52,28 +54,33 @@ const Order = observer(() => {
         getIngredients().then(data => setAllIngredients(data))
         getTypeOrders().then(data => setAllTypeOrders(data))
         getProducts().then(data => setAllProducts(data))
+        getProductsWithIngredients().then(data => setAllProductsWithIngredients(data))
         getUserChatFavoriteIngredients(user.user.chatId).then(data => setFavoriteIngredients(data))
         getUserChatUnlovedIngredients(user.user.chatId).then(data => setUnlovedIngredients(data))
         getUserChatFavoriteProducts(user.user.chatId).then(data => setAllFavoriteProducts(data)).finally(() => setLoading(false))
     }, [])
 
+    console.log(favoriteIngredients)
 
     function containsObjectIngredient(obj, list) {
-        var i;
-        for (i = 0; i < list.length; i++) {
-            if (list[i]?.ingredient.id === obj.id) {
-                return true;
+        try {
+            var i;
+            for (i = 0; i < list.length; i++) {
+                if (list[i]?.ingredient.id === obj.id) {
+                    return true;
+                }
             }
-        }
-        return false;
+            return false;
+        } catch (e) {}
     }
 
     const handleFavoriteIngredient = (e) => {
         let options = e.target.options;
         let value = [];
+
         for (var i = 0, l = options.length; i < l; i++) {
             if (options[i].selected) {
-                value.push(options[i].value);
+                value.push({id: Number(options[i].value)});
             }
         }
         setFavoriteIngredients(value);
@@ -98,37 +105,44 @@ const Order = observer(() => {
                 value.push({id: Number(options[i].value)});
             }
         }
-        setFavoriteProducts(value);
+        let favoriteProductItem = []
+        value.forEach(i => {
+            const item = allFavoriteProducts.find(x => x.product.id === i.id);
+            favoriteProductItem.push(item.product)
+        })
+        setFavoriteProducts(favoriteProductItem);
+        favoriteProductItem = []
     }
 
 
     const createOrderFunc = async () => {
-        try {
-            if (!isCreatedOrder) {
-                const formData = new FormData();
-                formData.append('fullname', fullname);
-                formData.append('address', address);
-                formData.append('phoneNumber', phoneNumber);
-                formData.append('wish', wish);
-                formData.append('price', null);
-                formData.append('category_id', favoriteCategory);
-                formData.append('typeOrderId', typeOrder);
-                formData.append('chatId', user.user.chatId);
-                formData.append('user_id', user.user.id);
-                formData.append('isComplete', false);
-                formData.append('isPaid', false);
-
-                const itemOrder = await createOrderFunc(formData);
-                console.log(itemOrder)
-                if (itemOrder.status === 404) {
-                    return alert('Ошибка, что-то не введено')
-                }
-                return setIsCreatedOrder(true)
-            }
-            return alert('Ошибка, у тебя уже есть заказ, теперь ты должен составить свой рацион, а затем оплатить или удалить заказ')
-        } catch (e) {
-            console.log(e);
-        }
+        // try {
+        //     if (!isCreatedOrder) {
+        //         const formData = new FormData();
+        //         formData.append('fullname', fullname);
+        //         formData.append('address', address);
+        //         formData.append('phoneNumber', phoneNumber);
+        //         formData.append('wish', wish);
+        //         formData.append('price', null);
+        //         formData.append('category_id', favoriteCategory);
+        //         formData.append('typeOrderId', typeOrder);
+        //         formData.append('chatId', user.user.chatId);
+        //         formData.append('user_id', user.user.id);
+        //         formData.append('isComplete', false);
+        //         formData.append('isPaid', false);
+        //
+        //         const itemOrder = await createOrderFunc(formData);
+        //         console.log(itemOrder)
+        //         if (itemOrder.status === 404) {
+        //             return alert('Ошибка, что-то не введено')
+        //         }
+        //         return setIsCreatedOrder(true)
+        //     }
+        //     return alert('Ошибка, у тебя уже есть заказ, теперь ты должен составить свой рацион, а затем оплатить или удалить заказ')
+        // } catch (e) {
+        //     console.log(e);
+        // }
+        console.log(favoriteIngredients)
     }
 
     const createMealPlanFunc = async () => {
@@ -167,7 +181,7 @@ const Order = observer(() => {
                 favoriteCategory: favoriteCategory,
                 unlovedIngredients: unlovedIngredients,
                 favoriteProducts: favoriteProducts,
-                products: allProducts
+                products: allProductsWithIngredients
             }
             const plan = getMealPlan(userData);
 
@@ -283,6 +297,7 @@ const Order = observer(() => {
                                         })}
                                     </select>
                                 </div>
+                                {/*Можно вывести все и отметить те, которые хочешь*/}
                                 <div className={'mb-4'}>
                                     <label htmlFor="include"
                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Включить в рацион питания из Любимого</label>
