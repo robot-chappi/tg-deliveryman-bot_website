@@ -1,19 +1,9 @@
-import {catalogData} from "./mockdata";
-
 function getMealPlan(userData) {
   try {
     const favoriteCategory = userData.favoriteCategory;
     const unlovedIngredients = userData.unlovedIngredients;
     const favoriteProducts = userData.favoriteProducts;
     const products = userData.products;
-
-    // console.log(favoriteCategory);
-    // console.log(unlovedIngredients);
-    // console.log(favoriteProducts)
-    // console.log(products)
-
-    console.log(2222222)
-    console.log(unlovedIngredients)
 
     let mealPlan = {
       "Понедельник": [],
@@ -26,7 +16,6 @@ function getMealPlan(userData) {
     };
 
     let meal = [...favoriteProducts];
-    console.log(products)
     let morning = [];
     let afternoon = [];
     let night = [];
@@ -40,19 +29,13 @@ function getMealPlan(userData) {
 
     const myArrayFiltered = meal.filter((el) => {
       return unlovedIngredients.some((f) => {
-        // console.log(11111111)
-        // console.log(el.ingredients)
         return el.ingredients.some((i) => {
-          return f.ingredient.id === i.id;
+          return f.id === i.id;
         })
       });
     });
 
-    //console.log(myArrayFiltered)
-
     let mealFiltered = meal.filter(x => !myArrayFiltered.includes(x));
-
-    //console.log(mealFiltered)
 
     for (let product in mealFiltered) {
       if (meal[product]['type']['id'] === 1) {

@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react'
 import getMealPlan from "../GenerationWeeklyMealPlan/GenerationWeeklyMealPlan";
-// import {favoriteProducts, favoriteIngredients, categories} from "../GenerationWeeklyMealPlan/mockdata";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import {observer} from 'mobx-react-lite'
@@ -11,11 +10,10 @@ import {getUserChatUnlovedIngredients} from '../../http/unlovedIngredientAPI'
 import {getUserChatFavoriteProducts} from '../../http/favoriteProductAPI'
 import {getIngredients} from '../../http/ingredientsAPI'
 import {getTypeOrders} from '../../http/typeOrderAPI'
-import {getProducts, getProductsWithIngredients} from '../../http/productAPI'
-import {getUserOrder} from '../../http/orderAPI'
+import {getProductsWithIngredients} from '../../http/productAPI'
+import {createOrder, getUserOrder} from '../../http/orderAPI'
 import {createMealPlanProducts} from '../../http/mealPlanAPI'
 import {useNavigate} from 'react-router-dom'
-import * as events from 'events'
 
 const Order = observer(() => {
     const [fullname, setFullname] = useState('');
@@ -32,9 +30,10 @@ const Order = observer(() => {
 
     const [allTypeOrders, setAllTypeOrders] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
-    const [allProducts, setAllProducts] = useState([]);
     const [allProductsWithIngredients, setAllProductsWithIngredients] = useState([]);
     const [allFavoriteProducts, setAllFavoriteProducts] = useState([]);
+    const [allFavoriteIngredients, setAllFavoriteIngredients] = useState([]);
+    const [allUnlovedIngredients, setAllUnlovedIngredients] = useState([]);
     const [allIngredients, setAllIngredients] = useState([]);
 
 
@@ -44,35 +43,23 @@ const Order = observer(() => {
     const [favoriteProducts, setFavoriteProducts] = useState([]);
 
     const [loading, setLoading] = useState(true);
+    const [favoriteIngredientChecked, setfavoriteIngredientChecked] = useState(false);
+    const [unlovedIngredientChecked, setUnlovedIngredientChecked] = useState(false);
+    const [favoriteProductsChecked, setFavoriteProductsChecked] = useState(false);
 
     const {user} = useContext(Context)
     const navigate = useNavigate();
-    // const {chatId, fullname, phoneNumber, address, wish, price, isComplete, isPaid, category_id, user_id, typeOrderId} = req.body
+
 
     useEffect(() => {
         getCategories().then(data => setAllCategories(data))
         getIngredients().then(data => setAllIngredients(data))
         getTypeOrders().then(data => setAllTypeOrders(data))
-        getProducts().then(data => setAllProducts(data))
         getProductsWithIngredients().then(data => setAllProductsWithIngredients(data))
-        getUserChatFavoriteIngredients(user.user.chatId).then(data => setFavoriteIngredients(data))
-        getUserChatUnlovedIngredients(user.user.chatId).then(data => setUnlovedIngredients(data))
+        getUserChatFavoriteIngredients(user.user.chatId).then(data => setAllFavoriteIngredients(data))
+        getUserChatUnlovedIngredients(user.user.chatId).then(data => setAllUnlovedIngredients(data))
         getUserChatFavoriteProducts(user.user.chatId).then(data => setAllFavoriteProducts(data)).finally(() => setLoading(false))
     }, [])
-
-    console.log(favoriteIngredients)
-
-    function containsObjectIngredient(obj, list) {
-        try {
-            var i;
-            for (i = 0; i < list.length; i++) {
-                if (list[i]?.ingredient.id === obj.id) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (e) {}
-    }
 
     const handleFavoriteIngredient = (e) => {
         let options = e.target.options;
@@ -94,7 +81,7 @@ const Order = observer(() => {
                 value.push({id: Number(options[i].value)});
             }
         }
-        setFavoriteIngredients(value);
+        setUnlovedIngredients(value);
     }
 
     const handleFavoriteProducts = (e) => {
@@ -107,8 +94,8 @@ const Order = observer(() => {
         }
         let favoriteProductItem = []
         value.forEach(i => {
-            const item = allFavoriteProducts.find(x => x.product.id === i.id);
-            favoriteProductItem.push(item.product)
+            const item = allProductsWithIngredients.find(x => x.id === i.id);
+            favoriteProductItem.push(item)
         })
         setFavoriteProducts(favoriteProductItem);
         favoriteProductItem = []
@@ -116,33 +103,29 @@ const Order = observer(() => {
 
 
     const createOrderFunc = async () => {
-        // try {
-        //     if (!isCreatedOrder) {
-        //         const formData = new FormData();
-        //         formData.append('fullname', fullname);
-        //         formData.append('address', address);
-        //         formData.append('phoneNumber', phoneNumber);
-        //         formData.append('wish', wish);
-        //         formData.append('price', null);
-        //         formData.append('category_id', favoriteCategory);
-        //         formData.append('typeOrderId', typeOrder);
-        //         formData.append('chatId', user.user.chatId);
-        //         formData.append('user_id', user.user.id);
-        //         formData.append('isComplete', false);
-        //         formData.append('isPaid', false);
-        //
-        //         const itemOrder = await createOrderFunc(formData);
-        //         console.log(itemOrder)
-        //         if (itemOrder.status === 404) {
-        //             return alert('Ошибка, что-то не введено')
-        //         }
-        //         return setIsCreatedOrder(true)
-        //     }
-        //     return alert('Ошибка, у тебя уже есть заказ, теперь ты должен составить свой рацион, а затем оплатить или удалить заказ')
-        // } catch (e) {
-        //     console.log(e);
-        // }
-        console.log(favoriteIngredients)
+        try {
+            if (!isCreatedOrder) {
+                const formData = new FormData();
+                formData.append('fullname', fullname);
+                formData.append('address', address);
+                formData.append('phoneNumber', phoneNumber);
+                formData.append('wish', wish);
+                formData.append('price', null);
+                formData.append('category_id', favoriteCategory);
+                formData.append('typeOrderId', typeOrder);
+                formData.append('chatId', user.user.chatId);
+                formData.append('user_id', user.user.id);
+                formData.append('isComplete', false);
+                formData.append('isPaid', false);
+
+                await createOrder(formData)
+
+                return setIsCreatedOrder(true)
+            }
+            return alert('Ошибка, у тебя уже есть заказ, теперь ты должен составить свой рацион, а затем оплатить или удалить заказ')
+        } catch (e) {
+            alert('Ошибка, что-то введено не верно или у тебя уже есть заказ, теперь ты должен составить свой рацион, а затем оплатить или удалить заказ.')
+        }
     }
 
     const createMealPlanFunc = async () => {
@@ -153,40 +136,51 @@ const Order = observer(() => {
                 formData.append('order_id', userOrder.id);
                 formData.append('meal_plan_id', userOrder.mealplan.id);
                 formData.append('products', mealPlan);
-                formData.append('price', mealPlanPrice);
+                formData.append('price', mealPlanPrice.price);
 
-                const itemMealPlan = await createMealPlanProducts(formData);
-                console.log(itemMealPlan)
-                if (itemMealPlan.status === 404) {
-                    return alert('Ошибка, что-то пошло не так')
-                }
+                await createMealPlanProducts(formData);
+                // const itemMealPlan = await createMealPlanProducts(formData);
+                // console.log(itemMealPlan)
+                // if (itemMealPlan.status === 404) {
+                //     return alert('Ошибка, что-то пошло не так')
+                // }
                 return navigate('/payment')
             }
             return alert('Ошибка, ты еще не оформил основной заказ!')
         } catch (e) {
-            console.log(e);
+            alert('Ошибка, что-то пошло не так')
         }
     }
 
     const generateTheMealPlan = () => {
         try {
-            const myArrayFiltered = allProducts.filter((el) => {
-                return favoriteProducts.some((f) => {
-                    return el.id === f.id;
-                });
-            });
+            let unlovedIngredientsArray = [];
+            let favoriteProductsArray = [];
 
-            const userData = {
-                // getUserOrder
+            let userData = {
                 favoriteCategory: favoriteCategory,
                 unlovedIngredients: unlovedIngredients,
                 favoriteProducts: favoriteProducts,
                 products: allProductsWithIngredients
             }
+
+            if (unlovedIngredientChecked) {
+                allUnlovedIngredients.forEach(i => {
+                    unlovedIngredientsArray.push(i.ingredient)
+                })
+                userData.unlovedIngredients = unlovedIngredientsArray
+            }
+
+            if (favoriteProductsChecked) {
+                allFavoriteProducts.forEach(i => {
+                    favoriteProductsArray.push(i.product)
+                })
+                userData.favoriteProducts = favoriteProductsArray
+            }
+
             const plan = getMealPlan(userData);
 
             setMealPlanPrice(plan['price']);
-            console.log(plan)
             delete plan['price'];
 
             return setMealPlan(plan);
@@ -273,39 +267,83 @@ const Order = observer(() => {
                                     Сделать заказ
                                 </button>
                             </div>
-                            <section className={`${isCreatedOrder ? 'block' : ''}`}>
+                            <section className={`${isCreatedOrder ? 'block' : 'hidden'}`}>
                                 <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Создать рацион питания</h2>
                                 <div className={'mb-4'}>
                                     <label htmlFor="ingredients"
-                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Выбери любимые продукты</label>
-                                    <select multiple={true} id="ingredients"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Выбери любимые ингридиенты</label>
+                                    <div className={'block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mb-4'}>
+                                        <p className="text-sm font-thin text-gray-900 dark:text-gray-200">Твои любимые ингридиенты:</p>
+                                        <div className={'mb-4 flex gap-2'}>
+                                            {allFavoriteIngredients.map(i => {
+                                                return <p key={i.id} className="text-sm font-thin text-gray-900 dark:text-gray-200">{i.ingredient.title}</p>
+                                            })}
+                                        </div>
+                                        <div
+                                          className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                            <input type="checkbox" checked={favoriteIngredientChecked} onChange={({target: {checked}}) => setfavoriteIngredientChecked(checked)}
+                                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                                <label htmlFor="bordered-checkbox-1"
+                                                       className="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Выбрать это</label>
+                                        </div>
+                                    </div>
+                                    <select disabled={favoriteIngredientChecked ? true : false} multiple={true} id="ingredients"
                                             onChange={(event) => handleFavoriteIngredient(event)}
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                         {allIngredients.map((item) => {
-                                            return <option key={item.id} selected={containsObjectIngredient(item, favoriteIngredients) ? true : false} value={item.id}>{item.title}</option>
+                                            return <option key={item.id} value={item.id}>{item.title}</option>
                                         })}
                                     </select>
                                 </div>
                                 <div className={'mb-4'}>
                                     <label htmlFor="unlovedIngredients"
                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Выбери не любимые продукты</label>
-                                    <select multiple={true} id="unlovedIngredients"
+                                    <div className={'block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mb-4'}>
+                                        <p className="text-sm font-thin text-gray-900 dark:text-gray-200">Твои нелюбимые ингридиенты:</p>
+                                        <div className={'mb-4 flex gap-2'}>
+                                            {allUnlovedIngredients.map(i => {
+                                                return <p key={i.id} className="text-sm font-thin text-gray-900 dark:text-gray-200">{i.ingredient.title}</p>
+                                            })}
+                                        </div>
+                                        <div
+                                          className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                            <input type="checkbox" checked={unlovedIngredientChecked} onChange={({target: {checked}}) => setUnlovedIngredientChecked(checked)}
+                                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                            <label htmlFor="bordered-checkbox-1"
+                                                   className="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Выбрать это</label>
+                                        </div>
+                                    </div>
+                                    <select disabled={unlovedIngredientChecked ? true : false} multiple={true} id="unlovedIngredients"
                                             onChange={(event) => handleUnlovedIngredient(event)}
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                         {allIngredients.map((item) => {
-                                            return <option key={item.id} selected={containsObjectIngredient(item, unlovedIngredients) ? true : false} value={item.id}>{item.title}</option>
+                                            return <option key={item.id} value={item.id}>{item.title}</option>
                                         })}
                                     </select>
                                 </div>
-                                {/*Можно вывести все и отметить те, которые хочешь*/}
                                 <div className={'mb-4'}>
                                     <label htmlFor="include"
                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Включить в рацион питания из Любимого</label>
-                                    <select multiple={true} id="include"
+                                    <div className={'block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mb-4'}>
+                                        <p className="text-sm font-thin text-gray-900 dark:text-gray-200">Твои любимые продукты:</p>
+                                        <div className={'mb-4 flex gap-2'}>
+                                            {allFavoriteProducts.map(i => {
+                                                return <p key={i.id} className="text-sm font-thin text-gray-900 dark:text-gray-200">{i.product.title}</p>
+                                            })}
+                                        </div>
+                                        <div
+                                          className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                            <input type="checkbox" checked={favoriteProductsChecked} onChange={({target: {checked}}) => setFavoriteProductsChecked(checked)}
+                                                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                            <label htmlFor="bordered-checkbox-1"
+                                                   className="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Выбрать это</label>
+                                        </div>
+                                    </div>
+                                    <select disabled={favoriteProductsChecked ? true : false} multiple={true} id="include"
                                             onChange={(event) => handleFavoriteProducts(event)}
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                        {allFavoriteProducts.map((item) => {
-                                            return <option key={item.id} value={item.product.id}>{item.product.title}</option>
+                                        {allProductsWithIngredients.map((item) => {
+                                            return <option key={item.id} value={item.id}>{item.title}</option>
                                         })}
                                     </select>
                                 </div>
