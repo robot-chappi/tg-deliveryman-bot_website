@@ -110,7 +110,7 @@ const Order = observer(() => {
                 formData.append('address', address);
                 formData.append('phoneNumber', phoneNumber);
                 formData.append('wish', wish);
-                formData.append('price', null);
+                formData.append('price', 0);
                 formData.append('category_id', favoriteCategory);
                 formData.append('typeOrderId', typeOrder);
                 formData.append('chatId', user.user.chatId);

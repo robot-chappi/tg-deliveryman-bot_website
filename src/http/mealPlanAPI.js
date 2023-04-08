@@ -6,7 +6,7 @@ export const createMealPlanProduct = async (mealPlanProduct) => {
 }
 
 export const createMealPlanProducts = async (mealPlanProducts) => {
-  const {data} = await $authHost.post('api/mealplan/products', mealPlanProducts)
+  const {data} = await $authHost.post('api/mealplan/order/products', mealPlanProducts)
   return data
 }
 
