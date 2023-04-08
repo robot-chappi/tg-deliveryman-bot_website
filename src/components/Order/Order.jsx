@@ -138,7 +138,7 @@ const Order = observer(() => {
                 formData.append('products', mealPlan);
                 formData.append('price', mealPlanPrice.price);
 
-                await createMealPlanProducts(formData);
+                await createMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: mealPlan, price: mealPlanPrice.price});
                 // const itemMealPlan = await createMealPlanProducts(formData);
                 // console.log(itemMealPlan)
                 // if (itemMealPlan.status === 404) {
