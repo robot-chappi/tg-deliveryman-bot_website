@@ -1,32 +1,29 @@
-import React, {useState} from 'react';
-import {
-    order, pricesList, mockPrice
-} from "../GenerationWeeklyMealPlan/mockdata";
+import React, {useContext, useEffect, useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
+import {Context} from '../../index'
+import {getOrderMealPlanProducts} from '../../http/mealPlanAPI'
+import {deleteUserOrder, getUserOrder} from '../../http/orderAPI'
 
 
 const Payment = () => {
-    const [myOrder, setMyOrder] = useState(order);
-    const [priceId, setPriceId] = useState();
-    const [price, setPrice] = useState();
+    const [myOrder, setMyOrder] = useState({});
+    const [foodDivision, setFoodDivision] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    const {user} = useContext(Context)
     const navigate = useNavigate();
 
+    useEffect(() => {
+        getUserOrder(user.user.chatId).then(data => setMyOrder(data))
+        getOrderMealPlanProducts(user.user.chatId).then(data => setFoodDivision(data)).finally(() => setLoading(false))
+    }, [])
 
-    const changePrice = (event) => {
-        setPriceId(event.target.value)
-        if (Number(event.target.value) === 1) {
-            return setPrice(mockPrice)
-        }
-        if (Number(event.target.value) === 2) {
-            return setPrice(mockPrice*4)
-        }
-    }
 
-    const deletePayment = () => {
+    const deletePayment = async () => {
         try {
-            setMyOrder(null);
+            await deleteUserOrder(user.user.chatId);
             return navigate("/");
         } catch (e) {
             console.log(e)
@@ -35,12 +32,18 @@ const Payment = () => {
 
     const nextPayment = () => {
         try {
-            if (price) {
-                return navigate("/order");
+            if (myOrder) {
+                return navigate("/");
             }
         } catch (e) {
             console.log(e)
         }
+    }
+
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
     }
 
     return (
@@ -60,14 +63,14 @@ const Payment = () => {
                 <dl>
                     <dt className="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Детали</dt>
                     <dd className="mb-1 font-light text-gray-500 sm:mb-5 dark:text-gray-400">
-                        Категория еды: {myOrder?.favoriteCategory?.title}
+                        Категория: {myOrder.mealplan.category.title}
                     </dd>
                     <dd className="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">
                         План питания: <div className='pl-3 border-2 border-white mt-2'>
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Понедельник</h2>
                         {
-                            myOrder['mealPlan']['Понедельник']?.map((i) => {
+                            foodDivision['Понедельник']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
@@ -75,7 +78,7 @@ const Payment = () => {
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Вторник</h2>
                         {
-                            myOrder['mealPlan']['Вторник']?.map((i) => {
+                            foodDivision['Вторник']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
@@ -83,7 +86,7 @@ const Payment = () => {
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Среда</h2>
                         {
-                            myOrder['mealPlan']['Среда']?.map((i) => {
+                            foodDivision['Среда']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
@@ -91,7 +94,7 @@ const Payment = () => {
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Четверг</h2>
                         {
-                            myOrder['mealPlan']['Четверг']?.map((i) => {
+                            foodDivision['Четверг']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
@@ -99,7 +102,7 @@ const Payment = () => {
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Пятница</h2>
                         {
-                            myOrder['mealPlan']['Пятница']?.map((i) => {
+                            foodDivision['Пятница']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
@@ -107,7 +110,7 @@ const Payment = () => {
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Суббота</h2>
                         {
-                            myOrder['mealPlan']['Суббота']?.map((i) => {
+                            foodDivision['Суббота']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
@@ -115,30 +118,24 @@ const Payment = () => {
                     <div className="border-b dark:border-gray-700">
                         <h2 className='py-1'>Воскресенье</h2>
                         {
-                            myOrder['mealPlan']['Воскресенье']?.map((i) => {
+                            foodDivision['Воскресенье']?.map((i) => {
                                 return <p key={i.id} className='py-1 text-gray-800 dark:text-white'>{i.title}</p>
                             })
                         }
                     </div>
                     </div>
                     </dd>
-                    <dd className="mb-5 font-light text-gray-500 sm:mb-5 dark:text-gray-400">
+                    <dd className="mb-2 font-light text-gray-500 sm:mb-5 dark:text-gray-400">
                         Пожелание: {myOrder.wish}
                     </dd>
-                    <div className="mb-5">
-                        <label htmlFor="category"
-                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Выбор типа оплаты</label>
-                        <select id="category"
-                                onChange={event => changePrice(event)}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                            <option selected="">Выберете категорию</option>
-                            {pricesList.map((item) => {
-                                return <option key={item.id} value={item.id}>{item.title}</option>
-                            })}
-                        </select>
-                    </div>
+                    <dd className="mb-2 font-light text-gray-500 sm:mb-5 dark:text-gray-400">
+                        Оплачено: {myOrder.isPaid ? 'Да' : 'Нет'}
+                    </dd>
+                    <dd className="mb-5 font-light text-gray-500 sm:mb-5 dark:text-gray-400">
+                        Выполнено: {myOrder.isComplete ? 'Да' : 'Нет'}
+                    </dd>
                     <dt className="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Цена:</dt>
-                    <dd className="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{price ? `${Number(priceId) === 1 || Number(priceId) === 2 ? price : 'Ожидаем выбор оплаты'} ${Number(priceId) === 1 ? 'руб./неделя' : Number(priceId) === 2 ? 'руб./месяц' : ''}` : 'Ожидаем выбор оплаты'}</dd>
+                    <dd className="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{myOrder.type_order.slug === 'month' ? `${myOrder.mealplan.price * 4} руб/месяц (4 недели)` : `${myOrder.mealplan.price} руб/неделя`}</dd>
                 </dl>
                 <div className="flex bottom-0 left-0 justify-center pb-4 space-x-4 w-full md:px-4 md:absolute">
                     <button type="button" onClick={nextPayment}

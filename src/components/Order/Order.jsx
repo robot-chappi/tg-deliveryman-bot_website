@@ -20,9 +20,6 @@ const Order = observer(() => {
     const [address, setAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState();
     const [typeOrder, setTypeOrder] = useState();
-    const [favoriteFood, setFavoriteFood] = useState([]);
-    const [unlovedFood, setUnlovedFood] = useState([]);
-    const [foodFromFavorite, setFoodFromFavorite] = useState([]);
     const [mealPlan, setMealPlan] = useState([]);
     const [mealPlanPrice, setMealPlanPrice] = useState({});
     const [wish, setWish] = useState('');
@@ -38,6 +35,7 @@ const Order = observer(() => {
 
 
     const [favoriteCategory, setFavoriteCategory] = useState();
+    // eslint-disable-next-line no-unused-vars
     const [favoriteIngredients, setFavoriteIngredients] = useState([]);
     const [unlovedIngredients, setUnlovedIngredients] = useState([]);
     const [favoriteProducts, setFavoriteProducts] = useState([]);
@@ -135,15 +133,10 @@ const Order = observer(() => {
                 const formData = new FormData();
                 formData.append('order_id', userOrder.id);
                 formData.append('meal_plan_id', userOrder.mealplan.id);
-                formData.append('products', mealPlan);
+                formData.append('products', JSON.stringify(mealPlan));
                 formData.append('price', mealPlanPrice.price);
 
                 await createMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: mealPlan, price: mealPlanPrice.price});
-                // const itemMealPlan = await createMealPlanProducts(formData);
-                // console.log(itemMealPlan)
-                // if (itemMealPlan.status === 404) {
-                //     return alert('Ошибка, что-то пошло не так')
-                // }
                 return navigate('/payment')
             }
             return alert('Ошибка, ты еще не оформил основной заказ!')

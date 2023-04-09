@@ -6,7 +6,7 @@ export const createMealPlanProduct = async (mealPlanProduct) => {
 }
 
 export const createMealPlanProducts = async (mealPlanProducts) => {
-  const {data} = await $authHost.post('api/mealplan/order/products', mealPlanProducts)
+  const {data} = await $authHost.post('api/mealplan/order/products', mealPlanProducts, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}})
   return data
 }
 
@@ -20,8 +20,13 @@ export const getMealPlanProducts = async (id) => {
   return data
 }
 
-export const getOrderMealPlanProducts = async (orderId) => {
-  const {data} = await $host.get('api/mealplan/user/all/' + orderId)
+// export const getOrderMealPlanProducts = async (orderId) => {
+//   const {data} = await $host.get('api/mealplan/user/all/' + orderId)
+//   return data
+// }
+
+export const getOrderMealPlanProducts = async (chatId) => {
+  const {data} = await $host.get('api/mealplan/user/all/' + chatId)
   return data
 }
 
