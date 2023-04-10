@@ -15,6 +15,10 @@ import {createOrder, getUserOrder} from '../../http/orderAPI'
 import {createMealPlanProducts} from '../../http/mealPlanAPI'
 import {useNavigate} from 'react-router-dom'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faClose } from '@fortawesome/free-solid-svg-icons'
+import TableCreateDiet from '../TableCreateDiet/TableCreateDiet'
+
 const Order = observer(() => {
     const [fullname, setFullname] = useState('');
     const [address, setAddress] = useState('');
@@ -23,7 +27,10 @@ const Order = observer(() => {
     const [mealPlan, setMealPlan] = useState([]);
     const [mealPlanPrice, setMealPlanPrice] = useState({});
     const [wish, setWish] = useState('');
-    const [isCreatedOrder, setIsCreatedOrder] = useState(false);
+    const [isCreatedOrder, setIsCreatedOrder] = useState(true);
+    const [isGeneratedDiet, setIsGeneratedDiet] = useState(false);
+    const [isCreatedHandDiet, setIsCreatedHandDiet] = useState(false);
+    // const [isCreatedOrder, setIsCreatedOrder] = useState(false);
 
     const [allTypeOrders, setAllTypeOrders] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
@@ -145,6 +152,25 @@ const Order = observer(() => {
         }
     }
 
+    const closeGeneratedOrder = () => {
+        setIsGeneratedDiet(false)
+        setMealPlan([])
+    }
+
+    const closeCreateHandDiet = () => {
+        setIsCreatedHandDiet(false)
+        setMealPlan([])
+    }
+
+    const openCreateHandDiet = () => {
+        setIsCreatedHandDiet(true)
+        setMealPlan([])
+    }
+
+    const createCreateHandDient = () => {
+        console.log(111)
+    }
+
     const generateTheMealPlan = () => {
         try {
             let unlovedIngredientsArray = [];
@@ -176,7 +202,9 @@ const Order = observer(() => {
             setMealPlanPrice(plan['price']);
             delete plan['price'];
 
-            return setMealPlan(plan);
+            // return setMealPlan(plan);
+            setMealPlan(plan);
+            return setIsGeneratedDiet(true)
         } catch (e) {
             console.log(e);
         }
@@ -340,19 +368,45 @@ const Order = observer(() => {
                                         })}
                                     </select>
                                 </div>
-                                <button type={"button"}
-                                        onClick={generateTheMealPlan}
-                                        className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                                    Составить рацион
-                                </button>
+                                <div className={'flex item-center justify-center gap-2'}>
+                                    <button type={"button"}
+                                            onClick={generateTheMealPlan}
+                                            className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                        Сгенерировать рацион
+                                    </button>
+                                    <button type={"button"}
+                                            onClick={openCreateHandDiet}
+                                            className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                        Составить рацион
+                                    </button>
+                                </div>
                             </section>
                         </div>
                     </form>
                 </div>
             </section>
 
+            <section className={`bg-gray-50 dark:bg-gray-900 ${isCreatedHandDiet ? 'block' : 'hidden'} p-3 sm:p-5`}>
+                <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
+                    <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Ваш рацион питания</h2>
+                    <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <TableCreateDiet/>
+                        </div>
+                    </div>
+                    <div className={'flex justify-center'}>
+                        <button type={"button"}
+                                onClick={closeCreateHandDiet}
+                                className="inline-flex items-center px-5 gap-2 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                            <FontAwesomeIcon icon={faClose}/>
+                            Закрыть
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-            <section className={`bg-gray-50 dark:bg-gray-900 ${mealPlan.length !== 0 ? 'block' : 'hidden'} p-3 sm:p-5`}>
+
+            <section className={`bg-gray-50 dark:bg-gray-900 ${mealPlan.length !== 0 && isGeneratedDiet ? 'block' : 'hidden'} p-3 sm:p-5`}>
                 <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
                     <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Ваш рацион питания</h2>
                     <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -442,6 +496,14 @@ const Order = observer(() => {
                                 onClick={createMealPlanFunc}
                                 className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                             Заказать
+                        </button>
+                    </div>
+                    <div className={'flex justify-center'}>
+                        <button type={"button"}
+                                onClick={closeGeneratedOrder}
+                                className="inline-flex items-center px-5 gap-2 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                            <FontAwesomeIcon icon={faClose}/>
+                            Закрыть
                         </button>
                     </div>
                 </div>

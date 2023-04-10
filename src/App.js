@@ -61,7 +61,7 @@ import UserFAQ from "./components/UserFAQ/UserFAQ";
 import {Context} from './index'
 import {getUserToken} from './http/userAPI'
 import {observer} from 'mobx-react-lite'
-import CartFavorites from './components/CartFavorites/CartFavorites'
+import Profile from './components/Profile/Profile'
 
 const App = observer(() => {
     // eslint-disable-next-line no-unused-vars
@@ -96,7 +96,7 @@ const App = observer(() => {
                 <Route path={'/catalog'} element={<Catalog/>}/>
                 <Route path={'/faq_users'} element={<UserFAQ/>}/>
                 {user.isAuth ? <>
-                    <Route path={'/favorites'} element={<CartFavorites/>}/>
+                    <Route path={'/profile'} element={<Profile/>}/>
                     <Route path={'/order'} element={<Order/>}/>
                     <Route path={'/payment'} element={<Payment/>}/>
                 </> : <></>}

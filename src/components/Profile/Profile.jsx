@@ -19,7 +19,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faClose} from '@fortawesome/free-solid-svg-icons'
 import {getMyFavoriteIngredientItem, getMyUnlovedIngredientItem} from '../../http/userAPI'
 
-const CartFavorites = observer(() => {
+const Profile = observer(() => {
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(false);
   const [favoriteIngItems, setFavoriteIngItems] = useState([]);
@@ -68,10 +68,10 @@ const CartFavorites = observer(() => {
       <Header/>
       <section className="bg-white dark:bg-gray-900">
         <h1 className="py-7 text-center text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-          Любимое</h1>
+          Профиль 📝</h1>
         <div className={'bg-white dark:bg-gray-900'}>
             <h2
-              className="mb-4 pl-3 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
+              className="pl-3 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">
               Любимые продукты</h2>
             {products.favoriteproducts.map((i) => {
               return <div key={i.id}
@@ -148,4 +148,4 @@ const CartFavorites = observer(() => {
   )
 });
 
-export default CartFavorites
+export default Profile
