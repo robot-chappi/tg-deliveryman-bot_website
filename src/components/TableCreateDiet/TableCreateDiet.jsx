@@ -19,9 +19,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 // Creating styles
 const useStyles = makeStyles({
   root: {
-    "& > *": {
-      borderBottom: "unset",
-    },
+    // "& > *": {
+    //   borderBottom: "unset",
+    // },
   },
   table: {
     minWidth: 650
@@ -40,17 +40,23 @@ function TableCreateDiet() {
   // Defining a state named rows
   // which we can update by calling on setRows function
   const [rows, setRows] = useState([
-    { day: "Понедельник", breakfast: "", launch: "", dinner: "", snack: "" },
+    { day: "Понедельник", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Вторник", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Среда", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Четверг", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Пятница", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Суббота", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Воскресенье", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
   ]);
 
   // Initial states
   const [open, setOpen] = React.useState(false);
   const [isEdit, setEdit] = React.useState(false);
-  const [disable, setDisable] = React.useState(true);
-  const [showConfirm, setShowConfirm] = React.useState(false);
+  // const [disable, setDisable] = React.useState(true);
+  // const [showConfirm, setShowConfirm] = React.useState(false);
 
 
-  let days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+  // let days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
   // Function For closing the alert snackbar
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -60,17 +66,17 @@ function TableCreateDiet() {
   };
 
   // Function For adding new row object
-  const handleAdd = () => {
-
-    setRows([
-      ...rows,
-      {
-        day: days[rows.length - 1], breakfast: "",
-        launch: "", dinner: "", snack: ""
-      },
-    ]);
-    setEdit(true);
-  };
+  // const handleAdd = () => {
+  //
+  //   setRows([
+  //     ...rows,
+  //     {
+  //       day: days[rows.length - 1], breakfast: "",
+  //       launch: "", dinner: "", snack: ""
+  //     },
+  //   ]);
+  //   setEdit(true);
+  // };
 
   // Function to handle edit
   const handleEdit = (i) => {
@@ -81,10 +87,11 @@ function TableCreateDiet() {
 
   // Function to handle save
   const handleSave = () => {
+    console.log(321312)
     setEdit(!isEdit);
     setRows(rows);
     console.log("сохранены : ", rows);
-    setDisable(true);
+    // setDisable(true);
     setOpen(true);
   };
 
@@ -92,7 +99,7 @@ function TableCreateDiet() {
   // many different inputs in the form, listen for changes
   // to input elements and record their values in state
   const handleInputChange = (e, index) => {
-    setDisable(false);
+    // setDisable(false);
     const { name, value } = e.target;
     const list = [...rows];
     list[index][name] = value;
@@ -100,24 +107,24 @@ function TableCreateDiet() {
   };
 
   // Showing delete confirmation to users
-  const handleConfirm = () => {
-    setShowConfirm(true);
-  };
+  // const handleConfirm = () => {
+  //   setShowConfirm(true);
+  // };
 
   // Handle the case of delete confirmation where
   // user click yes delete a specific row of id:i
-  const handleRemoveClick = (i) => {
-    const list = [...rows];
-    list.splice(i, 1);
-    setRows(list);
-    setShowConfirm(false);
-  };
+  // const handleRemoveClick = (i) => {
+  //   const list = [...rows];
+  //   list.splice(i, 1);
+  //   setRows(list);
+  //   setShowConfirm(false);
+  // };
 
   // Handle the case of delete confirmation
   // where user click no
-  const handleNo = () => {
-    setShowConfirm(false);
-  };
+  // const handleNo = () => {
+  //   setShowConfirm(false);
+  // };
 
   return (
     <TableBody>
@@ -132,61 +139,35 @@ function TableCreateDiet() {
         </Alert>
       </Snackbar>
       <Box margin={1}>
-        <div className={'bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'} style={{ display: "flex", justifyContent: "space-between"}}>
+        <div style={{ display: "flex", justifyContent: "space-between"}}>
           <div>
             {isEdit ? (
               <div className={'flex item-center gap-2 p-2'}>
-                <div className="text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                <Button onClick={handleAdd}>
-                  <label className={'flex item-center gap-1'}>
-                    <AddBoxIcon onClick={handleAdd} />
-                    Добавить
-                  </label>
-                </Button>
-                </div>
                 {rows.length !== 0 && (
-                  <div className="text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                    {disable ? (
-                      <Button disabled align="right" onClick={handleSave}>
-                        <label className={'flex item-center gap-1 text-white'}>
-                          <DoneIcon />
-                          Сохранить
-                        </label>
-                      </Button>
-                    ) : (
-                      <Button align="right" onClick={handleSave}>
-                        <label className={'flex item-center gap-1 text-white'}>
-                          <DoneIcon />
-                          Сохранить
-                        </label>
-                      </Button>
-                    )}
-                  </div>
+                  <>
+                    <button onClick={handleSave}>
+                      <label className={'flex item-center gap-1 p-3 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'}>
+                      <DoneIcon />
+                        Сохранить
+                      </label>
+                    </button>
+                  </>
                 )}
               </div>
             ) : (
               <div className={'flex item-center gap-2 p-2'}>
-                <div className="text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                  <Button onClick={handleAdd}>
-                    <label className={'flex item-center gap-1 text-white'}>
-                      <AddBoxIcon onClick={handleAdd} />
-                      Добавить
-                    </label>
-                  </Button>
-                </div>
-                <div className="text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-                  <Button align="right" onClick={handleEdit}>
-                    <label className={'flex item-center gap-1 text-white'}>
-                      <CreateIcon />
+                <>
+                  <button onClick={handleEdit}>
+                    <label className={'flex item-center gap-1 p-3 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'}>
+                    <CreateIcon />
                       Редактировать
                     </label>
-                  </Button>
-                </div>
+                  </button>
+                </>
               </div>
             )}
           </div>
         </div>
-        {/*<TableRow align="center"></TableRow>*/}
 
         <Table
           className={classes.table}
@@ -195,30 +176,26 @@ function TableCreateDiet() {
         >
           <TableHead>
             <TableRow>
-              <TableCell>День</TableCell>
-              <TableCell>Завтрак</TableCell>
-              <TableCell>Обед</TableCell>
-              <TableCell>Ужин</TableCell>
-              <TableCell>Перекус</TableCell>
+              <TableCell><p className={'text-sm font-medium text-white'}>День</p></TableCell>
+              <TableCell><p className={'text-sm font-medium text-white'}>Завтрак</p></TableCell>
+              <TableCell><p className={'text-sm font-medium text-white'}>Обед</p></TableCell>
+              <TableCell><p className={'text-sm font-medium text-white'}>Ужин</p></TableCell>
+              <TableCell><p className={'text-sm font-medium text-white'}>Перекус</p></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, i) => {
               return (
-                <div>
                   <TableRow>
                     {isEdit ? (
-                      <div>
-                        <TableCell padding="none">
-                          <input
-                            value={row.day}
-                            name="day"
-                          />
+                      <>
+                        <TableCell scope="row">
+                          <p className={'text-sm font-medium text-white'}>{row.day}</p>
                         </TableCell>
-                        <TableCell padding="none">
+                        <TableCell scope="row">
                           <select
                             name="breakfast"
-                            value={row.breakfast}
+                            value={row.breakfast.title}
                             onChange={(e) => handleInputChange(e, i)}
                           >
                             <option value=""></option>
@@ -229,10 +206,10 @@ function TableCreateDiet() {
                             <option value="Pulgaon">Pulgaon</option>
                           </select>
                         </TableCell>
-                        <TableCell padding="none">
+                        <TableCell scope="row">
                           <select
                             name="launch"
-                            value={row.launch}
+                            value={row.launch.title}
                             onChange={(e) => handleInputChange(e, i)}
                           >
                             <option value=""></option>
@@ -243,10 +220,10 @@ function TableCreateDiet() {
                             <option value="Pulgaon">Pulgaon</option>
                           </select>
                         </TableCell>
-                        <TableCell padding="none">
+                        <TableCell scope="row">
                           <select
                             name="dinner"
-                            value={row.dinner}
+                            value={row.dinner.title}
                             onChange={(e) => handleInputChange(e, i)}
                           >
                             <option value=""></option>
@@ -257,10 +234,10 @@ function TableCreateDiet() {
                             <option value="Pulgaon">Pulgaon</option>
                           </select>
                         </TableCell>
-                        <TableCell padding="none">
+                        <TableCell scope="row">
                           <select
                             name="snack"
-                            value={row.snack}
+                            value={row.snack.title}
                             onChange={(e) => handleInputChange(e, i)}
                           >
                             <option value=""></option>
@@ -271,74 +248,27 @@ function TableCreateDiet() {
                             <option value="Pulgaon">Pulgaon</option>
                           </select>
                         </TableCell>
-                      </div>
+                      </>
                     ) : (
-                      <div>
+                      <>
                         <TableCell component="th" scope="row">
-                          {row.breakfast}
+                          <p className={'text-sm font-medium text-white'}>{row.day}</p>
                         </TableCell>
                         <TableCell component="th" scope="row">
-                          {row.launch}
+                          <p className={'text-sm font-medium text-white'}>{row.breakfast.id ? row.breakfast.title : 'Нет'}</p>
                         </TableCell>
-                        <TableCell component="th" scope="row" align="center">
-                          {row.dinner}
+                        <TableCell component="th" scope="row">
+                          <p className={'text-sm font-medium text-white'}>{row.launch.id ? row.launch.title : 'Нет'}</p>
                         </TableCell>
-                        <TableCell component="th" scope="row" align="center">
-                          {row.snack}
+                        <TableCell component="th" scope="row">
+                          <p className={'text-sm font-medium text-white'}>{row.dinner.id ? row.dinner.title : 'Нет'}</p>
                         </TableCell>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          align="center"
-                        ></TableCell>
-                      </div>
-                    )}
-                    {isEdit ? (
-                      <Button className="mr10" onClick={handleConfirm}>
-                        <ClearIcon />
-                      </Button>
-                    ) : (
-                      <Button className="mr10" onClick={handleConfirm}>
-                        <DeleteOutlineIcon />
-                      </Button>
-                    )}
-                    {showConfirm && (
-                      <div>
-                        <Dialog
-                          open={showConfirm}
-                          onClose={handleNo}
-                          aria-labelledby="alert-dialog-title"
-                          aria-describedby="alert-dialog-description"
-                        >
-                          <DialogTitle id="alert-dialog-title">
-                            {"Confirm Delete"}
-                          </DialogTitle>
-                          <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                              Ты уверен?
-                            </DialogContentText>
-                          </DialogContent>
-                          <DialogActions>
-                            <Button
-                              onClick={() => handleRemoveClick(i)}
-                              color="primary"
-                              autoFocus
-                            >
-                              Да
-                            </Button>
-                            <Button
-                              onClick={handleNo}
-                              color="primary"
-                              autoFocus
-                            >
-                              Нет
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
-                      </div>
+                        <TableCell component="th" scope="row">
+                          <p className={'text-sm font-medium text-white'}>{row.snack.id ? row.snack.title : 'Нет'}</p>
+                        </TableCell>
+                      </>
                     )}
                   </TableRow>
-                </div>
               );
             })}
           </TableBody>
