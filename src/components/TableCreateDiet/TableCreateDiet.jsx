@@ -1,20 +1,16 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from 'react'
 import CreateIcon from "@material-ui/icons/Create";
 import {
-  Box, Button, Snackbar, Table,
+  Box, Snackbar, Table,
   TableBody, TableCell, TableHead, TableRow
 } from "@material-ui/core";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import AddBoxIcon from "@material-ui/icons/AddBox";
 import DoneIcon from "@material-ui/icons/Done";
-import ClearIcon from "@material-ui/icons/Clear";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import {getProductsWithIngredients} from '../../http/productAPI'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons'
+import ModalTableCreateDietProduct from '../ModalTableCreateDietProduct/ModalTableCreateDietProduct'
 
 // Creating styles
 const useStyles = makeStyles({
@@ -51,10 +47,17 @@ function TableCreateDiet() {
 
   // Initial states
   const [open, setOpen] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [modalProduct, setModalProduct] = React.useState({});
   const [isEdit, setEdit] = React.useState(false);
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   // const [disable, setDisable] = React.useState(true);
   // const [showConfirm, setShowConfirm] = React.useState(false);
 
+  useEffect(() => {
+    getProductsWithIngredients().then(data => setProducts(data)).finally(() => setLoading(false))
+  }, [])
 
   // let days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
   // Function For closing the alert snackbar
@@ -94,37 +97,39 @@ function TableCreateDiet() {
     // setDisable(true);
     setOpen(true);
   };
-
+  // console.log(products)
   // The handleInputChange handler can be set up to handle
   // many different inputs in the form, listen for changes
   // to input elements and record their values in state
   const handleInputChange = (e, index) => {
     // setDisable(false);
     const { name, value } = e.target;
+    const item = products.find(x => x.id === Number(value));
+    // console.log(name)
     const list = [...rows];
-    list[index][name] = value;
+    if (!item) {
+      list[index][name]['id'] = null;
+      list[index][name]['title'] = '';
+      return setRows(list);
+    }
+    list[index][name]['id'] = item.id;
+    list[index][name]['title'] = item.title;
+    // console.log(list)
     setRows(list);
   };
 
-  // Showing delete confirmation to users
-  // const handleConfirm = () => {
-  //   setShowConfirm(true);
-  // };
+  const openInfoProduct = (id) => {
+    const item = products.find(x => x.id === Number(id));
+    setModalProduct(item)
+    setOpenModal(true)
+  }
 
-  // Handle the case of delete confirmation where
-  // user click yes delete a specific row of id:i
-  // const handleRemoveClick = (i) => {
-  //   const list = [...rows];
-  //   list.splice(i, 1);
-  //   setRows(list);
-  //   setShowConfirm(false);
-  // };
 
-  // Handle the case of delete confirmation
-  // where user click no
-  // const handleNo = () => {
-  //   setShowConfirm(false);
-  // };
+  if (loading) {
+    return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+    </div>
+  }
 
   return (
     <TableBody>
@@ -138,6 +143,7 @@ function TableCreateDiet() {
           Сохранено успешно!
         </Alert>
       </Snackbar>
+      {/*<ModalTableCreateDietProduct open={openModal} product={modalProduct} onClose={() => setOpenModal(false)}>Text</ModalTableCreateDietProduct>*/}
       <Box margin={1}>
         <div style={{ display: "flex", justifyContent: "space-between"}}>
           <div>
@@ -193,18 +199,22 @@ function TableCreateDiet() {
                           <p className={'text-sm font-medium text-white'}>{row.day}</p>
                         </TableCell>
                         <TableCell scope="row">
-                          <select
-                            name="breakfast"
-                            value={row.breakfast.title}
-                            onChange={(e) => handleInputChange(e, i)}
-                          >
-                            <option value=""></option>
-                            <option value="Karanja">Karanja</option>
-                            <option value="Hingoli">Hingoli</option>
-                            <option value="Bhandara">Bhandara</option>
-                            <option value="Amaravati">Amaravati</option>
-                            <option value="Pulgaon">Pulgaon</option>
-                          </select>
+                          <div className={'flex item-center gap-1'}>
+                            <select
+                              name="breakfast"
+                              onChange={(e) => handleInputChange(e, i)}
+                            >
+                              <option value={null} selected="">Выберете продукт:</option>
+                              {products.map((item) => {
+                                return <option key={item.id} value={item.id}>{item.title} | {item.type.title}</option>
+                              })}
+                            </select>
+                            <button type={"button"}
+                                    onClick={() => openInfoProduct(row.breakfast.id)}
+                                    className="inline-flex items-center p-1 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                              <FontAwesomeIcon icon={faBookOpen}/>
+                            </button>
+                          </div>
                         </TableCell>
                         <TableCell scope="row">
                           <select
