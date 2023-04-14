@@ -12,7 +12,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBookOpen } from '@fortawesome/free-solid-svg-icons'
 import ModalTableCreateDietProduct from '../ModalTableCreateDietProduct/ModalTableCreateDietProduct'
 
-// Creating styles
 const useStyles = makeStyles({
   root: {
     // "& > *": {
@@ -27,40 +26,33 @@ const useStyles = makeStyles({
   },
 });
 
-// rgb(190 24 93 / var(--tw-bg-opacity));
 
 function TableCreateDiet() {
-  // Creating style object
   const classes = useStyles();
 
-  // Defining a state named rows
-  // which we can update by calling on setRows function
   const [rows, setRows] = useState([
-    { day: "Понедельник", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
-    { day: "Вторник", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
-    { day: "Среда", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
-    { day: "Четверг", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
-    { day: "Пятница", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
-    { day: "Суббота", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
-    { day: "Воскресенье", breakfast: {id: null, title: ""}, launch: {id: null, title: ""}, dinner: {id: null, title: ""}, snack: {id: null, title: ""} },
+    { day: "Понедельник", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
+    { day: "Вторник", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
+    { day: "Среда", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
+    { day: "Четверг", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
+    { day: "Пятница", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
+    { day: "Суббота", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
+    { day: "Воскресенье", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
   ]);
 
-  // Initial states
   const [open, setOpen] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [modalProduct, setModalProduct] = React.useState({});
   const [isEdit, setEdit] = React.useState(false);
   const [products, setProducts] = React.useState([]);
+  const [mealPlanPriceDone, setMealPlanPriceDone] = useState({});
+  const [mealPlanItem, setMealPlanItem] = useState({});
   const [loading, setLoading] = React.useState(true);
-  // const [disable, setDisable] = React.useState(true);
-  // const [showConfirm, setShowConfirm] = React.useState(false);
 
   useEffect(() => {
     getProductsWithIngredients().then(data => setProducts(data)).finally(() => setLoading(false))
   }, [])
 
-  // let days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
-  // Function For closing the alert snackbar
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -68,59 +60,243 @@ function TableCreateDiet() {
     setOpen(false);
   };
 
-  // Function For adding new row object
-  // const handleAdd = () => {
-  //
-  //   setRows([
-  //     ...rows,
-  //     {
-  //       day: days[rows.length - 1], breakfast: "",
-  //       launch: "", dinner: "", snack: ""
-  //     },
-  //   ]);
-  //   setEdit(true);
-  // };
-
-  // Function to handle edit
   const handleEdit = (i) => {
-    // If edit mode is true setEdit will
-    // set it to false and vice versa
     setEdit(!isEdit);
   };
 
-  // Function to handle save
+  const handleDone = () => {
+    let i = [
+      {
+        "day": "Понедельник",
+        "breakfast": {
+          "id": 9,
+          "title": "Еда Еда",
+          "price": 200
+        },
+        "launch": {
+          "id": 5,
+          "title": "Еда - обед",
+          "price": 200
+        },
+        "dinner": {
+          "id": 6,
+          "title": "Еда - ужин",
+          "price": 200
+        },
+        "snack": {
+          "id": 17,
+          "title": "Бардак Сет",
+          "price": 200
+        }
+      },
+      {
+        "day": "Вторник",
+        "breakfast": {
+          "id": 10,
+          "title": "Суши 'Вулкан'",
+          "price": 200
+        },
+        "launch": {
+          "id": 13,
+          "title": "Картофель по деревенски",
+          "price": 200
+        },
+        "dinner": {
+          "id": 6,
+          "title": "Еда - ужин",
+          "price": 200
+        },
+        "snack": {
+          "id": 17,
+          "title": "Бардак Сет",
+          "price": 200
+        }
+      },
+      {
+        "day": "Среда",
+        "breakfast": {
+          "id": 9,
+          "title": "Еда Еда",
+          "price": 200
+        },
+        "launch": {
+          "id": 13,
+          "title": "Картофель по деревенски",
+          "price": 200
+        },
+        "dinner": {
+          "id": 12,
+          "title": "Суши 'Торнадо'",
+          "price": 200
+        },
+        "snack": {
+          "id": 17,
+          "title": "Бардак Сет",
+          "price": 200
+        }
+      },
+      {
+        "day": "Четверг",
+        "breakfast": {
+          "id": 3,
+          "title": "Паста 3",
+          "price": 200
+        },
+        "launch": {
+          "id": 5,
+          "title": "Еда - обед",
+          "price": 200
+        },
+        "dinner": {
+          "id": 6,
+          "title": "Еда - ужин",
+          "price": 200
+        },
+        "snack": {
+          "id": 8,
+          "title": "Еда Еда",
+          "price": 200
+        }
+      },
+      {
+        "day": "Пятница",
+        "breakfast": {
+          "id": 4,
+          "title": "Еда - завтрак",
+          "price": 200
+        },
+        "launch": {
+          "id": 5,
+          "title": "Еда - обед",
+          "price": 200
+        },
+        "dinner": {
+          "id": 6,
+          "title": "Еда - ужин",
+          "price": 200
+        },
+        "snack": {
+          "id": 7,
+          "title": "Еда - перекус",
+          "price": 200
+        }
+      },
+      {
+        "day": "Суббота",
+        "breakfast": {
+          "id": 1,
+          "title": "Паста 1",
+          "price": 200
+        },
+        "launch": {
+          "id": 5,
+          "title": "Еда - обед",
+          "price": 200
+        },
+        "dinner": {
+          "id": 12,
+          "title": "Суши 'Торнадо'",
+          "price": 200
+        },
+        "snack": {
+          "id": 8,
+          "title": "Еда Еда",
+          "price": 200
+        }
+      },
+      {
+        "day": "Воскресенье",
+        "breakfast": {
+          "id": 10,
+          "title": "Суши 'Вулкан'",
+          "price": 200
+        },
+        "launch": {
+          "id": 5,
+          "title": "Еда - обед",
+          "price": 200
+        },
+        "dinner": {
+          "id": 12,
+          "title": "Суши 'Торнадо'",
+          "price": 200
+        },
+        "snack": {
+          "id": 8,
+          "title": "Еда Еда",
+          "price": 200
+        }
+      }
+    ]
+
+    let mealPlan = {
+      "Понедельник": [],
+      "Вторник": [],
+      "Среда": [],
+      "Четверг": [],
+      "Пятница": [],
+      "Суббота": [],
+      "Воскресенье": []
+    };
+    let days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+
+
+    i.forEach(item => {
+      mealPlan[item.day].push({id: item['breakfast']['id'], title: item['breakfast']['title'], price: item['breakfast']['price']})
+      mealPlan[item.day].push({id: item['launch']['id'], title: item['launch']['title'], price: item['launch']['price']})
+      mealPlan[item.day].push({id: item['dinner']['id'], title: item['dinner']['title'], price: item['dinner']['price']})
+      mealPlan[item.day].push({id: item['snack']['id'], title: item['snack']['title'], price: item['snack']['price']})
+    })
+
+    let price = {price: 0};
+    for (let day of days) {
+      let priceOneDay = mealPlan[day].reduce(function(previousValue, currentValue) {
+        return {
+          price: previousValue.price + currentValue.price,
+        }
+      });
+
+      price['price'] = price['price'] + priceOneDay.price
+    }
+    mealPlan.price = price
+
+    setMealPlanPriceDone(mealPlan['price']);
+    delete mealPlan['price'];
+
+    setMealPlanItem(mealPlan)
+
+    console.log(mealPlan)
+  };
+
   const handleSave = () => {
-    console.log(321312)
     setEdit(!isEdit);
     setRows(rows);
-    console.log("сохранены : ", rows);
-    // setDisable(true);
     setOpen(true);
   };
-  // console.log(products)
-  // The handleInputChange handler can be set up to handle
-  // many different inputs in the form, listen for changes
-  // to input elements and record their values in state
+
   const handleInputChange = (e, index) => {
-    // setDisable(false);
     const { name, value } = e.target;
     const item = products.find(x => x.id === Number(value));
-    // console.log(name)
     const list = [...rows];
     if (!item) {
       list[index][name]['id'] = null;
       list[index][name]['title'] = '';
+      list[index][name]['price'] = null;
       return setRows(list);
     }
     list[index][name]['id'] = item.id;
     list[index][name]['title'] = item.title;
-    // console.log(list)
+    list[index][name]['price'] = item.price;
     setRows(list);
   };
 
   const openInfoProduct = (id) => {
-    const item = products.find(x => x.id === Number(id));
-    setModalProduct(item)
+    if (id) {
+      const item = products.find(x => x.id === Number(id));
+      setModalProduct(item)
+    } else {
+      setModalProduct({})
+    }
     setOpenModal(true)
   }
 
@@ -143,7 +319,7 @@ function TableCreateDiet() {
           Сохранено успешно!
         </Alert>
       </Snackbar>
-      {/*<ModalTableCreateDietProduct open={openModal} product={modalProduct} onClose={() => setOpenModal(false)}>Text</ModalTableCreateDietProduct>*/}
+      <ModalTableCreateDietProduct open={openModal} product={modalProduct} onClose={() => setOpenModal(false)}/>
       <Box margin={1}>
         <div style={{ display: "flex", justifyContent: "space-between"}}>
           <div>
@@ -162,14 +338,18 @@ function TableCreateDiet() {
               </div>
             ) : (
               <div className={'flex item-center gap-2 p-2'}>
-                <>
-                  <button onClick={handleEdit}>
-                    <label className={'flex item-center gap-1 p-3 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'}>
-                    <CreateIcon />
-                      Редактировать
-                    </label>
-                  </button>
-                </>
+                <button onClick={handleEdit}>
+                  <label className={'flex item-center gap-1 p-3 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'}>
+                  <CreateIcon />
+                    Редактировать
+                  </label>
+                </button>
+                <button onClick={handleDone}>
+                  <label className={'flex item-center gap-1 p-3 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'}>
+                    <DoneIcon />
+                    Создать
+                  </label>
+                </button>
               </div>
             )}
           </div>
@@ -206,7 +386,7 @@ function TableCreateDiet() {
                             >
                               <option value={null} selected="">Выберете продукт:</option>
                               {products.map((item) => {
-                                return <option key={item.id} value={item.id}>{item.title} | {item.type.title}</option>
+                                return <option selected={row.breakfast.id === item.id ? true : false} key={item.id} value={item.id}>{item.title} | {item.type.title} | {item.price}р</option>
                               })}
                             </select>
                             <button type={"button"}
@@ -217,46 +397,58 @@ function TableCreateDiet() {
                           </div>
                         </TableCell>
                         <TableCell scope="row">
-                          <select
-                            name="launch"
-                            value={row.launch.title}
-                            onChange={(e) => handleInputChange(e, i)}
-                          >
-                            <option value=""></option>
-                            <option value="Karanja">Karanja</option>
-                            <option value="Hingoli">Hingoli</option>
-                            <option value="Bhandara">Bhandara</option>
-                            <option value="Amaravati">Amaravati</option>
-                            <option value="Pulgaon">Pulgaon</option>
-                          </select>
+                          <div className={'flex item-center gap-1'}>
+                            <select
+                              name="launch"
+                              onChange={(e) => handleInputChange(e, i)}
+                            >
+                              <option value={null} selected="">Выберете продукт:</option>
+                              {products.map((item) => {
+                                return <option selected={row.launch.id === item.id ? true : false} key={item.id} value={item.id}>{item.title} | {item.type.title} | {item.price}р</option>
+                              })}
+                            </select>
+                            <button type={"button"}
+                                    onClick={() => openInfoProduct(row.launch.id)}
+                                    className="inline-flex items-center p-1 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                              <FontAwesomeIcon icon={faBookOpen}/>
+                            </button>
+                          </div>
                         </TableCell>
                         <TableCell scope="row">
-                          <select
-                            name="dinner"
-                            value={row.dinner.title}
-                            onChange={(e) => handleInputChange(e, i)}
-                          >
-                            <option value=""></option>
-                            <option value="Karanja">Karanja</option>
-                            <option value="Hingoli">Hingoli</option>
-                            <option value="Bhandara">Bhandara</option>
-                            <option value="Amaravati">Amaravati</option>
-                            <option value="Pulgaon">Pulgaon</option>
-                          </select>
+                          <div className={'flex item-center gap-1'}>
+                            <select
+                              name="dinner"
+                              onChange={(e) => handleInputChange(e, i)}
+                            >
+                              <option value={null} selected="">Выберете продукт:</option>
+                              {products.map((item) => {
+                                return <option selected={row.dinner.id === item.id ? true : false} key={item.id} value={item.id}>{item.title} | {item.type.title} | {item.price}р</option>
+                              })}
+                            </select>
+                            <button type={"button"}
+                                    onClick={() => openInfoProduct(row.dinner.id)}
+                                    className="inline-flex items-center p-1 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                              <FontAwesomeIcon icon={faBookOpen}/>
+                            </button>
+                          </div>
                         </TableCell>
                         <TableCell scope="row">
-                          <select
-                            name="snack"
-                            value={row.snack.title}
-                            onChange={(e) => handleInputChange(e, i)}
-                          >
-                            <option value=""></option>
-                            <option value="Karanja">Karanja</option>
-                            <option value="Hingoli">Hingoli</option>
-                            <option value="Bhandara">Bhandara</option>
-                            <option value="Amaravati">Amaravati</option>
-                            <option value="Pulgaon">Pulgaon</option>
-                          </select>
+                          <div className={'flex item-center gap-1'}>
+                            <select
+                              name="snack"
+                              onChange={(e) => handleInputChange(e, i)}
+                            >
+                              <option value={null} selected="">Выберете продукт:</option>
+                              {products.map((item) => {
+                                return <option selected={row.snack.id === item.id ? true : false} key={item.id} value={item.id}>{item.title} | {item.type.title} | {item.price}р</option>
+                              })}
+                            </select>
+                            <button type={"button"}
+                                    onClick={() => openInfoProduct(row.snack.id)}
+                                    className="inline-flex items-center p-1 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                              <FontAwesomeIcon icon={faBookOpen}/>
+                            </button>
+                          </div>
                         </TableCell>
                       </>
                     ) : (
