@@ -12,7 +12,7 @@ import {getIngredients} from '../../http/ingredientsAPI'
 import {getTypeOrders} from '../../http/typeOrderAPI'
 import {getProductsWithIngredients} from '../../http/productAPI'
 import {createOrder, getUserOrder} from '../../http/orderAPI'
-import {createMealPlanProducts} from '../../http/mealPlanAPI'
+import {createOrderMealPlanProducts} from '../../http/mealPlanAPI'
 import {useNavigate} from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -27,7 +27,7 @@ const Order = observer(() => {
     const [mealPlan, setMealPlan] = useState([]);
     const [mealPlanPrice, setMealPlanPrice] = useState({});
     const [wish, setWish] = useState('');
-    const [isCreatedOrder, setIsCreatedOrder] = useState(true);
+    const [isCreatedOrder, setIsCreatedOrder] = useState(false);
     const [isGeneratedDiet, setIsGeneratedDiet] = useState(false);
     const [isCreatedHandDiet, setIsCreatedHandDiet] = useState(false);
     // const [isCreatedOrder, setIsCreatedOrder] = useState(false);
@@ -137,13 +137,13 @@ const Order = observer(() => {
         try {
             const userOrder = await getUserOrder(user.user.chatId);
             if (userOrder && isCreatedOrder) {
-                const formData = new FormData();
-                formData.append('order_id', userOrder.id);
-                formData.append('meal_plan_id', userOrder.mealplan.id);
-                formData.append('products', JSON.stringify(mealPlan));
-                formData.append('price', mealPlanPrice.price);
+                // const formData = new FormData();
+                // formData.append('order_id', userOrder.id);
+                // formData.append('meal_plan_id', userOrder.mealplan.id);
+                // formData.append('products', JSON.stringify(mealPlan));
+                // formData.append('price', mealPlanPrice.price);
 
-                await createMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: mealPlan, price: mealPlanPrice.price});
+                await createOrderMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: mealPlan, price: mealPlanPrice.price});
                 return navigate('/payment')
             }
             return alert('Ошибка, ты еще не оформил основной заказ!')

@@ -5,12 +5,12 @@ export const createMealPlanProduct = async (mealPlanProduct) => {
   return data
 }
 
-export const createMealPlanProducts = async (mealPlanProducts) => {
+export const createOrderMealPlanProducts = async (mealPlanProducts) => {
   const {data} = await $authHost.post('api/mealplan/order/products', mealPlanProducts, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}})
   return data
 }
 
-export const createOrderMealPlanProducts = async (mealPlanProducts) => {
+export const createMealPlanProducts = async (mealPlanProducts) => {
   const {data} = await $authHost.post('api/mealplan/order/products', mealPlanProducts)
   return data
 }

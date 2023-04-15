@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import CreateIcon from "@material-ui/icons/Create";
 import {
   Box, Snackbar, Table,
@@ -11,13 +11,12 @@ import {getProductsWithIngredients} from '../../http/productAPI'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBookOpen } from '@fortawesome/free-solid-svg-icons'
 import ModalTableCreateDietProduct from '../ModalTableCreateDietProduct/ModalTableCreateDietProduct'
+import {Context} from '../../index'
+import {getUserOrder} from '../../http/orderAPI'
+import {createOrderMealPlanProducts} from '../../http/mealPlanAPI'
+import {useNavigate} from 'react-router-dom'
 
 const useStyles = makeStyles({
-  root: {
-    // "& > *": {
-    //   borderBottom: "unset",
-    // },
-  },
   table: {
     minWidth: 650
   },
@@ -29,6 +28,8 @@ const useStyles = makeStyles({
 
 function TableCreateDiet() {
   const classes = useStyles();
+  const {user} = useContext(Context);
+  const navigate = useNavigate();
 
   const [rows, setRows] = useState([
     { day: "Понедельник", breakfast: {id: null, title: "", price: null}, launch: {id: null, title: "", price: null}, dinner: {id: null, title: "", price: null}, snack: {id: null, title: "", price: null} },
@@ -45,9 +46,11 @@ function TableCreateDiet() {
   const [modalProduct, setModalProduct] = React.useState({});
   const [isEdit, setEdit] = React.useState(false);
   const [products, setProducts] = React.useState([]);
+  const [mealPlanPrice, setMealPlanPrice] = useState(0);
   const [mealPlanPriceDone, setMealPlanPriceDone] = useState({});
   const [mealPlanItem, setMealPlanItem] = useState({});
   const [loading, setLoading] = React.useState(true);
+  const [finishMealPlan, setFinishMealPlan] = React.useState(false);
 
   useEffect(() => {
     getProductsWithIngredients().then(data => setProducts(data)).finally(() => setLoading(false))
@@ -64,214 +67,98 @@ function TableCreateDiet() {
     setEdit(!isEdit);
   };
 
-  const handleDone = () => {
-    let i = [
-      {
-        "day": "Понедельник",
-        "breakfast": {
-          "id": 9,
-          "title": "Еда Еда",
-          "price": 200
-        },
-        "launch": {
-          "id": 5,
-          "title": "Еда - обед",
-          "price": 200
-        },
-        "dinner": {
-          "id": 6,
-          "title": "Еда - ужин",
-          "price": 200
-        },
-        "snack": {
-          "id": 17,
-          "title": "Бардак Сет",
-          "price": 200
-        }
-      },
-      {
-        "day": "Вторник",
-        "breakfast": {
-          "id": 10,
-          "title": "Суши 'Вулкан'",
-          "price": 200
-        },
-        "launch": {
-          "id": 13,
-          "title": "Картофель по деревенски",
-          "price": 200
-        },
-        "dinner": {
-          "id": 6,
-          "title": "Еда - ужин",
-          "price": 200
-        },
-        "snack": {
-          "id": 17,
-          "title": "Бардак Сет",
-          "price": 200
-        }
-      },
-      {
-        "day": "Среда",
-        "breakfast": {
-          "id": 9,
-          "title": "Еда Еда",
-          "price": 200
-        },
-        "launch": {
-          "id": 13,
-          "title": "Картофель по деревенски",
-          "price": 200
-        },
-        "dinner": {
-          "id": 12,
-          "title": "Суши 'Торнадо'",
-          "price": 200
-        },
-        "snack": {
-          "id": 17,
-          "title": "Бардак Сет",
-          "price": 200
-        }
-      },
-      {
-        "day": "Четверг",
-        "breakfast": {
-          "id": 3,
-          "title": "Паста 3",
-          "price": 200
-        },
-        "launch": {
-          "id": 5,
-          "title": "Еда - обед",
-          "price": 200
-        },
-        "dinner": {
-          "id": 6,
-          "title": "Еда - ужин",
-          "price": 200
-        },
-        "snack": {
-          "id": 8,
-          "title": "Еда Еда",
-          "price": 200
-        }
-      },
-      {
-        "day": "Пятница",
-        "breakfast": {
-          "id": 4,
-          "title": "Еда - завтрак",
-          "price": 200
-        },
-        "launch": {
-          "id": 5,
-          "title": "Еда - обед",
-          "price": 200
-        },
-        "dinner": {
-          "id": 6,
-          "title": "Еда - ужин",
-          "price": 200
-        },
-        "snack": {
-          "id": 7,
-          "title": "Еда - перекус",
-          "price": 200
-        }
-      },
-      {
-        "day": "Суббота",
-        "breakfast": {
-          "id": 1,
-          "title": "Паста 1",
-          "price": 200
-        },
-        "launch": {
-          "id": 5,
-          "title": "Еда - обед",
-          "price": 200
-        },
-        "dinner": {
-          "id": 12,
-          "title": "Суши 'Торнадо'",
-          "price": 200
-        },
-        "snack": {
-          "id": 8,
-          "title": "Еда Еда",
-          "price": 200
-        }
-      },
-      {
-        "day": "Воскресенье",
-        "breakfast": {
-          "id": 10,
-          "title": "Суши 'Вулкан'",
-          "price": 200
-        },
-        "launch": {
-          "id": 5,
-          "title": "Еда - обед",
-          "price": 200
-        },
-        "dinner": {
-          "id": 12,
-          "title": "Суши 'Торнадо'",
-          "price": 200
-        },
-        "snack": {
-          "id": 8,
-          "title": "Еда Еда",
-          "price": 200
-        }
+  const createMealPlanFunc = async () => {
+    try {
+      console.log(mealPlanItem)
+      const userOrder = await getUserOrder(user.user.chatId);
+      if (userOrder && finishMealPlan) {
+        await createOrderMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: JSON.stringify(mealPlanItem), price: mealPlanPriceDone.price});
+        return navigate('/payment')
       }
-    ]
+      return alert('Ошибка, у тебя заполнены не все элементы в таблице!')
+    } catch (e) {
+      alert('Ошибка, что-то пошло не так')
+    }
+  }
 
-    let mealPlan = {
-      "Понедельник": [],
-      "Вторник": [],
-      "Среда": [],
-      "Четверг": [],
-      "Пятница": [],
-      "Суббота": [],
-      "Воскресенье": []
-    };
-    let days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+  const handleSumProduct = (array) => {
+    let price = {price: 0};
+    let itemPrice = {breakfastPrice: 0, launchPrice: 0, dinnerPrice: 0, snackPrice: 0};
+    array.forEach(i => {
+      itemPrice.breakfastPrice = i['breakfast']['price'] ? i['breakfast']['price'] : 0
+      itemPrice.launchPrice = i['launch']['price'] ? i['launch']['price'] : 0
+      itemPrice.dinnerPrice = i['dinner']['price'] ? i['dinner']['price'] : 0
+      itemPrice.snackPrice = i['snack']['price'] ? i['snack']['price'] : 0
+      price['price'] = price['price'] + itemPrice.breakfastPrice + itemPrice.launchPrice + itemPrice.dinnerPrice + itemPrice.snackPrice
+    })
+    setMealPlanPrice(price.price)
+  }
 
-
-    i.forEach(item => {
-      mealPlan[item.day].push({id: item['breakfast']['id'], title: item['breakfast']['title'], price: item['breakfast']['price']})
-      mealPlan[item.day].push({id: item['launch']['id'], title: item['launch']['title'], price: item['launch']['price']})
-      mealPlan[item.day].push({id: item['dinner']['id'], title: item['dinner']['title'], price: item['dinner']['price']})
-      mealPlan[item.day].push({id: item['snack']['id'], title: item['snack']['title'], price: item['snack']['price']})
+  const handleDone = () => {
+    let problem = false;
+    rows.forEach(i => {
+      if (i['breakfast']['id'] === null || i['launch']['id'] === null | i['dinner']['id'] === null | i['snack']['id'] === null) problem = true
     })
 
-    let price = {price: 0};
-    for (let day of days) {
-      let priceOneDay = mealPlan[day].reduce(function(previousValue, currentValue) {
-        return {
-          price: previousValue.price + currentValue.price,
-        }
-      });
+    if (problem === false) {
+      let mealPlan = {
+        "Понедельник": [],
+        "Вторник": [],
+        "Среда": [],
+        "Четверг": [],
+        "Пятница": [],
+        "Суббота": [],
+        "Воскресенье": []
+      };
+      let days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 
-      price['price'] = price['price'] + priceOneDay.price
+
+      rows.forEach(item => {
+        mealPlan[item.day].push({
+          id: item['breakfast']['id'],
+          title: item['breakfast']['title'],
+          price: item['breakfast']['price']
+        })
+        mealPlan[item.day].push({
+          id: item['launch']['id'],
+          title: item['launch']['title'],
+          price: item['launch']['price']
+        })
+        mealPlan[item.day].push({
+          id: item['dinner']['id'],
+          title: item['dinner']['title'],
+          price: item['dinner']['price']
+        })
+        mealPlan[item.day].push({id: item['snack']['id'], title: item['snack']['title'], price: item['snack']['price']})
+      })
+
+      let price = {price: 0};
+      for (let day of days) {
+        let priceOneDay = mealPlan[day].reduce(function (previousValue, currentValue) {
+          return {
+            price: previousValue.price + currentValue.price,
+          }
+        });
+
+        price['price'] = price['price'] + priceOneDay.price
+      }
+      mealPlan.price = price
+
+      setMealPlanPriceDone(mealPlan['price']);
+      delete mealPlan['price'];
+
+      setMealPlanItem(mealPlan);
+      setFinishMealPlan(true);
+      return createMealPlanFunc()
     }
-    mealPlan.price = price
-
-    setMealPlanPriceDone(mealPlan['price']);
-    delete mealPlan['price'];
-
-    setMealPlanItem(mealPlan)
-
-    console.log(mealPlan)
+    return console.log('error')
   };
 
   const handleSave = () => {
     setEdit(!isEdit);
     setRows(rows);
     setOpen(true);
+    handleSumProduct(rows)
   };
 
   const handleInputChange = (e, index) => {
@@ -299,7 +186,6 @@ function TableCreateDiet() {
     }
     setOpenModal(true)
   }
-
 
   if (loading) {
     return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -475,6 +361,9 @@ function TableCreateDiet() {
             })}
           </TableBody>
         </Table>
+        <div className={'block p-3'}>
+          <p className={'text-sm font-medium text-white'}>Общая цена: {mealPlanPrice}р</p>
+        </div>
       </Box>
     </TableBody>
   );
