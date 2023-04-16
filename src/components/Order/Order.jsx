@@ -11,12 +11,12 @@ import {getUserChatFavoriteProducts} from '../../http/favoriteProductAPI'
 import {getIngredients} from '../../http/ingredientsAPI'
 import {getTypeOrders} from '../../http/typeOrderAPI'
 import {getProductsWithIngredients} from '../../http/productAPI'
-import {createOrder, getUserOrder} from '../../http/orderAPI'
+import {createOrder, deleteUserOrder, getUserOrder} from '../../http/orderAPI'
 import {createOrderMealPlanProducts} from '../../http/mealPlanAPI'
 import {useNavigate} from 'react-router-dom'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClose } from '@fortawesome/free-solid-svg-icons'
+import {faClose} from '@fortawesome/free-solid-svg-icons'
 import TableCreateDiet from '../TableCreateDiet/TableCreateDiet'
 
 const Order = observer(() => {
@@ -52,6 +52,8 @@ const Order = observer(() => {
     const [unlovedIngredientChecked, setUnlovedIngredientChecked] = useState(false);
     const [favoriteProductsChecked, setFavoriteProductsChecked] = useState(false);
 
+    const [myOrder, setMyOrder] = useState({});
+
     const {user} = useContext(Context)
     const navigate = useNavigate();
 
@@ -61,6 +63,9 @@ const Order = observer(() => {
         getIngredients().then(data => setAllIngredients(data))
         getTypeOrders().then(data => setAllTypeOrders(data))
         getProductsWithIngredients().then(data => setAllProductsWithIngredients(data))
+
+        getUserOrder(user.user.chatId).then(data => setMyOrder(data))
+
         getUserChatFavoriteIngredients(user.user.chatId).then(data => setAllFavoriteIngredients(data))
         getUserChatUnlovedIngredients(user.user.chatId).then(data => setAllUnlovedIngredients(data))
         getUserChatFavoriteProducts(user.user.chatId).then(data => setAllFavoriteProducts(data)).finally(() => setLoading(false))
@@ -137,12 +142,6 @@ const Order = observer(() => {
         try {
             const userOrder = await getUserOrder(user.user.chatId);
             if (userOrder && isCreatedOrder) {
-                // const formData = new FormData();
-                // formData.append('order_id', userOrder.id);
-                // formData.append('meal_plan_id', userOrder.mealplan.id);
-                // formData.append('products', JSON.stringify(mealPlan));
-                // formData.append('price', mealPlanPrice.price);
-
                 await createOrderMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: mealPlan, price: mealPlanPrice.price});
                 return navigate('/payment')
             }
@@ -167,9 +166,6 @@ const Order = observer(() => {
         setMealPlan([])
     }
 
-    const createCreateHandDient = () => {
-        console.log(111)
-    }
 
     const generateTheMealPlan = () => {
         try {
@@ -219,6 +215,38 @@ const Order = observer(() => {
     return (
         <div>
             <Header/>
+            <div className={'bg-white dark:bg-gray-900'}>
+              {myOrder ? <div className={'rounded-lg bg-red-50 dark:bg-gray-800'}>
+                  <div id="alert-2"
+                       className="flex p-4 text-red-800 dark:text-red-400"
+                       role="alert">
+                      <svg aria-hidden="true" className="flex-shrink-0 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                           xmlns="http://www.w3.org/2000/svg">
+                          <path fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                clipRule="evenodd"></path>
+                      </svg>
+                      <span className="sr-only">Info</span>
+                      <div className="ml-3 text-sm font-medium">
+                          У вас уже есть заказ! Оплатите или удалите его чтобы заново оформить заказ
+                      </div>
+                  </div>
+                  <div className={'flex pb-5 justify-center gap-2 item-center'}>
+                    <button type="button"
+                            onClick={async () => {await deleteUserOrder(user.user.chatId).then(() => navigate('/'))}}
+                            className="inline-flex items-center px-5 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-800"
+                            data-dismiss-target="#alert-2" aria-label="Close">
+                          Удалить
+                      </button>
+                      <button type="button"
+                              onClick={() => navigate('/payment')}
+                              className="inline-flex items-center px-5 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg focus:ring-4 focus:ring-green-200 dark:focus:ring-green-900 hover:bg-green-800"
+                              data-dismiss-target="#alert-2" aria-label="Close">
+                          Оплатить
+                      </button>
+                  </div>
+              </div> : <></>}
+          </div>
             <section className="bg-white dark:bg-gray-900">
                 <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
                     <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Создать заказ</h2>
@@ -281,6 +309,8 @@ const Order = observer(() => {
                                           className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                           placeholder="Опиши пожелания к своему рациону"></textarea>
                             </div>
+
+
                             <div>
                                 <button type={"button"}
                                         onClick={createOrderFunc}
@@ -288,6 +318,7 @@ const Order = observer(() => {
                                     Сделать заказ
                                 </button>
                             </div>
+
                             <section className={`${isCreatedOrder ? 'block' : 'hidden'}`}>
                                 <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Создать рацион питания</h2>
                                 <div className={'mb-4'}>

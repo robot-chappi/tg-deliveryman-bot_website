@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react'
 import CreateIcon from "@material-ui/icons/Create";
 import {
-  Box, Snackbar, Table,
+  Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Table,
   TableBody, TableCell, TableHead, TableRow
-} from "@material-ui/core";
+} from '@material-ui/core'
 import DoneIcon from "@material-ui/icons/Done";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
@@ -15,6 +15,7 @@ import {Context} from '../../index'
 import {getUserOrder} from '../../http/orderAPI'
 import {createOrderMealPlanProducts} from '../../http/mealPlanAPI'
 import {useNavigate} from 'react-router-dom'
+import Button from '../Button/Button'
 
 const useStyles = makeStyles({
   table: {
@@ -42,9 +43,11 @@ function TableCreateDiet() {
   ]);
 
   const [open, setOpen] = React.useState(false);
+  const [openError, setOpenError] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [modalProduct, setModalProduct] = React.useState({});
   const [isEdit, setEdit] = React.useState(false);
+  const [showConfirm, setShowConfirm] = React.useState(false);
   const [products, setProducts] = React.useState([]);
   const [mealPlanPrice, setMealPlanPrice] = useState(0);
   const [mealPlanPriceDone, setMealPlanPriceDone] = useState({});
@@ -63,6 +66,13 @@ function TableCreateDiet() {
     setOpen(false);
   };
 
+  const handleCloseError = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenError(false);
+  };
+
   const handleEdit = (i) => {
     setEdit(!isEdit);
   };
@@ -72,7 +82,7 @@ function TableCreateDiet() {
       console.log(mealPlanItem)
       const userOrder = await getUserOrder(user.user.chatId);
       if (userOrder && finishMealPlan) {
-        await createOrderMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: JSON.stringify(mealPlanItem), price: mealPlanPriceDone.price});
+        await createOrderMealPlanProducts({order_id: userOrder.id, meal_plan_id: userOrder.mealplan.id, products: mealPlanItem, price: mealPlanPriceDone.price});
         return navigate('/payment')
       }
       return alert('Ошибка, у тебя заполнены не все элементы в таблице!')
@@ -149,9 +159,9 @@ function TableCreateDiet() {
 
       setMealPlanItem(mealPlan);
       setFinishMealPlan(true);
-      return createMealPlanFunc()
+      return setShowConfirm(true);
     }
-    return console.log('error')
+    return setOpenError(true)
   };
 
   const handleSave = () => {
@@ -187,6 +197,14 @@ function TableCreateDiet() {
     setOpenModal(true)
   }
 
+  const handleYes = async () => {
+    await createMealPlanFunc()
+  };
+
+  const handleNo = () => {
+    setShowConfirm(false);
+  };
+
   if (loading) {
     return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
@@ -203,6 +221,16 @@ function TableCreateDiet() {
       >
         <Alert onClose={handleClose} severity="success">
           Сохранено успешно!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={openError}
+        autoHideDuration={2000}
+        onClose={handleCloseError}
+        className={classes.snackbar}
+      >
+        <Alert onClose={handleCloseError} severity="error">
+          Вы не заполнили всю таблицу с рационом питания!
         </Alert>
       </Snackbar>
       <ModalTableCreateDietProduct open={openModal} product={modalProduct} onClose={() => setOpenModal(false)}/>
@@ -364,6 +392,41 @@ function TableCreateDiet() {
         <div className={'block p-3'}>
           <p className={'text-sm font-medium text-white'}>Общая цена: {mealPlanPrice}р</p>
         </div>
+        {showConfirm && (
+          <div>
+            <Dialog
+              open={showConfirm}
+              onClose={handleNo}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Подтверждение формирования рациона питания"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Вы уверены, что вы правильно собрали рацион питания для себя?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleYes}
+                  color="primary"
+                  autoFocus
+                >
+                  Да
+                </Button>
+                <Button
+                  onClick={handleNo}
+                  color="primary"
+                  autoFocus
+                >
+                  Нет
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        )}
       </Box>
     </TableBody>
   );
