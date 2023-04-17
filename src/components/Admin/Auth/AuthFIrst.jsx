@@ -1,25 +1,30 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import Footer from "../../Footer/Footer";
 import Header from "../../Header/Header";
-import { useOutletContext } from "react-router-dom"
 import {observer} from 'mobx-react-lite'
+import {Context} from '../../../index'
 
-const Auth = observer(() => {
+const AuthFirst = observer(() => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState();
     const [password, setPassword] = useState();
-    const [currentUser, setCurrentUser] = useOutletContext()
-
+    const {user} = useContext(Context)
 
     const authToAdmin = () => {
         try {
-            console.log(currentUser)
-            if (String(password) !== 'qwerty' || String(email) !== 'admin@admin.com') {
-                return navigate("/admin/auth");
+            if (String(password) === String(process.env.REACT_APP_ADMIN_PASSWORD)) {
+                localStorage.setItem('auth', 'admin')
+                user.setIsAdmin(true)
             }
-            setCurrentUser({name: 'chappic', role: 'admin'})
-            return navigate("/admin");
+            if (String(password) === String(process.env.REACT_APP_COPYWRITER_PASSWORD)) {
+                localStorage.setItem('auth', 'copywriter')
+                user.setIsCopywriter(true)
+            }
+            if (String(password) === String(process.env.REACT_APP_ANALYST_PASSWORD)) {
+                localStorage.setItem('auth', 'analyst')
+                user.setIsAnalyst(true)
+            }
+            return navigate("/");
         } catch (e) {
             console.log(e)
         }
@@ -34,7 +39,7 @@ const Auth = observer(() => {
                         className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                                Вход в Админ панель
+                                Вход
                             </h1>
                             <form className="space-y-4 md:space-y-6" action="#">
                                 <div>
@@ -58,4 +63,4 @@ const Auth = observer(() => {
     );
 });
 
-export default Auth;
+export default AuthFirst;

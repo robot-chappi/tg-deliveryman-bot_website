@@ -128,8 +128,11 @@ const Order = observer(() => {
                 formData.append('isComplete', false);
                 formData.append('isPaid', false);
 
-                await createOrder(formData)
+                const response = await createOrder(formData)
 
+                if (response.error) {
+                    return alert('Ошибка, у тебя уже есть заказ, ты должен удалить заказ или оплатить его')
+                }
                 return setIsCreatedOrder(true)
             }
             return alert('Ошибка, у тебя уже есть заказ, теперь ты должен составить свой рацион, а затем оплатить или удалить заказ')
@@ -162,6 +165,7 @@ const Order = observer(() => {
     }
 
     const openCreateHandDiet = () => {
+        setIsGeneratedDiet(false)
         setIsCreatedHandDiet(true)
         setMealPlan([])
     }
@@ -198,8 +202,8 @@ const Order = observer(() => {
             setMealPlanPrice(plan['price']);
             delete plan['price'];
 
-            // return setMealPlan(plan);
             setMealPlan(plan);
+            setIsCreatedHandDiet(false)
             return setIsGeneratedDiet(true)
         } catch (e) {
             console.log(e);

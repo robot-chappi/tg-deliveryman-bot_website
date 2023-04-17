@@ -4,6 +4,8 @@ export default class UserStore {
   constructor() {
     this._isAuth = false
     this._isAdmin = false
+    this._isCopywriter = false
+    this._isAnalyst = false
     this._user = {}
     makeAutoObservable(this)
   }
@@ -14,6 +16,12 @@ export default class UserStore {
   setIsAdmin(bool) {
     this._isAdmin = bool
   }
+  setIsCopywriter(bool) {
+    this._isCopywriter = bool
+  }
+  setIsAnalyst(bool) {
+    this._isAnalyst = bool
+  }
   setUser(user) {
     this._user = user
   }
@@ -23,6 +31,12 @@ export default class UserStore {
   }
   get isAdmin() {
     return this._isAdmin
+  }
+  get isCopywriter() {
+    return this._isCopywriter
+  }
+  get isAnalyst() {
+    return this._isAnalyst
   }
   get user() {
     return this._user

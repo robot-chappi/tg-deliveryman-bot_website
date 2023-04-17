@@ -62,6 +62,7 @@ import {Context} from './index'
 import {getUserToken} from './http/userAPI'
 import {observer} from 'mobx-react-lite'
 import Profile from './components/Profile/Profile'
+import AuthFirst from './components/Admin/Auth/AuthFIrst'
 
 const App = observer(() => {
     // eslint-disable-next-line no-unused-vars
@@ -71,15 +72,24 @@ const App = observer(() => {
     useEffect(() => {
         tg.ready();
 
-        getUserToken('895411068').then(data => {
+        // 895411068
+        getUserToken('').then(data => {
             user.setIsAuth(true);
             user.setIsAdmin(data.role === 'admin' ? true : false)
             user.setUser(data)
         }).finally(() => setLoading(false))
 
+        const checkAdminRoles = () => {
+            const item = localStorage.getItem('auth');
+            if (String(item) === 'admin') user.setIsAdmin(true)
+            if (String(item) === 'copywriter') user.setIsCopywriter(true)
+            if (String(item) === 'analyst') user.setIsAnalyst(true)
+        }
+
         AOS.init({
             once: true
         });
+        checkAdminRoles()
         setLoading(false)
     }, [tg, user])
 
@@ -95,13 +105,14 @@ const App = observer(() => {
                 <Route index element={<Main/>}/>
                 <Route path={'/catalog'} element={<Catalog/>}/>
                 <Route path={'/faq_users'} element={<UserFAQ/>}/>
+                <Route path={'/auth'} element={<AuthFirst/>}/>
                 {user.isAuth ? <>
                     <Route path={'/profile'} element={<Profile/>}/>
                     <Route path={'/order'} element={<Order/>}/>
                     <Route path={'/payment'} element={<Payment/>}/>
                 </> : <></>}
 
-                {user.isAdmin ? <Route path={'/admin'} element={<Admin/>}>
+                {user.isAdmin || user.isCopywriter || user.isAnalyst ? <Route path={'/admin'} element={<Admin/>}>
                     <Route path={'/admin'} element={<Dashboard/>}/>
                     <Route path={'/admin/auth'} element={<Auth/>}/>
                     <Route path={'/admin/products'} element={<IndexProducts/>}>
