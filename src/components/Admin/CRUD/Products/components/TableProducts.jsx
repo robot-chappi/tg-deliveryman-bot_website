@@ -1,21 +1,32 @@
-import React, {useState} from 'react';
-import filterItemCategory from "../../../../Filter/filter";
-import {catalogData, categories} from "../../../../GenerationWeeklyMealPlan/mockdata";
+import React, {useContext, useEffect} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
+import {Context} from '../../../../../index'
+import {getCategories} from '../../../../../http/categoryAPI'
+import {getTypes} from '../../../../../http/typeAPI'
+import {getPaginationProducts} from '../../../../../http/productAPI'
+import {observer} from 'mobx-react-lite'
 
-const TableProducts = () => {
-    const [catalogDataItems, setCatalogDataItems] = useState(catalogData);
-    const [paginateBack, setPaginateBack] = useState(0);
-    const [paginateForward, setPaginateForward] = useState(5);
+const TableProducts = observer(() => {
+    const {products} = useContext(Context);
     const navigate = useNavigate();
 
-    // eslint-disable-next-line no-unused-vars
-    const changeCategory = (name) => {
-        const items = filterItemCategory(catalogData, name);
-        return setCatalogDataItems(items);
-    }
+    useEffect(() => {
+        getCategories().then(data => products.setCategories(data))
+        getTypes().then(data => products.setTypes(data))
+        getPaginationProducts(null, null, 3,1).then(data => {
+            products.setProducts(data.rows)
+            products.setTotalCount(data.count)
+        })
+    }, [])
+
+    useEffect(() => {
+        getPaginationProducts(products.selectedCategory.id, products.selectedType.id, 2, products.page).then(data => {
+            products.setProducts(data.rows)
+            products.setTotalCount(data.count)
+        })
+    }, [products.page, products.selectedType, products.selectedCategory])
 
     const openProduct = (id) => {
         return navigate(`/admin/products/show/${id}`);
@@ -44,7 +55,7 @@ const TableProducts = () => {
                                 <div className="flex items-center flex-1 space-x-4">
                                     <h5>
                                         <span className="text-gray-500">Всего продуктов: </span>
-                                        <span className="dark:text-white">{catalogData.length}</span>
+                                        <span className="dark:text-white">{products.totalCount}</span>
                                     </h5>
                                 </div>
                                 <div
@@ -59,13 +70,27 @@ const TableProducts = () => {
                                         Добавить продукт
                                     </button>
                                 </div>
+                                <h5><span className={'text-gray-500'}>Категории:</span></h5>
                                 <div className={'flex items-center space-y-3 gap-1'} style={{flexWrap: 'wrap'}}>
-                                    {categories.map((i) => {
-                                        return <button key={i.id} onClick={() => changeCategory(i.title)} type={'button'} className="flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:bg-primary-400 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600">
-                                            {i.title}
+                                    {products.categories.map((item) => {
+                                        console.log(item)
+                                        return <button key={item.id} onClick={() => products.setSelectedCategory(item)} type={'button'} className={`flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg ${products.selectedCategory.id === item.id ? 'bg-primary-600' : 'bg-primary-500 dark:bg-gray-800 dark:bg-primary-400 '} hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600`}>
+                                            {item.title}
                                         </button>
                                     })}
-                                    <button onClick={() => setCatalogDataItems(catalogData)} type={'button'} className="flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:bg-primary-400 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600">
+                                    <button onClick={() => products.setSelectedCategory({id: null})} type={'button'} className="flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:bg-primary-400 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600">
+                                        Сбросить
+                                    </button>
+                                </div>
+                                <h5><span className={'text-gray-500'}>Типы:</span></h5>
+                                <div className={'flex items-center space-y-3 gap-1'} style={{flexWrap: 'wrap'}}>
+                                    {products.types.map((item) => {
+                                        console.log(item)
+                                        return <button key={item.id} onClick={() => products.setSelectedType(item)} type={'button'} className={`flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg ${products.selectedCategory.id === item.id ? 'bg-primary-600' : 'bg-primary-500 dark:bg-gray-800 dark:bg-primary-400 '} hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600`}>
+                                            {item.title}
+                                        </button>
+                                    })}
+                                    <button onClick={() => products.setSelectedType({id: null})} type={'button'} className="flex items-center justify-center px-4 py-1 text-sm font-medium text-white rounded-lg bg-primary-500 hover:bg-primary-600 focus:ring-4 focus:ring-primary-100 dark:bg-primary-400 dark:hover:bg-primary-500 focus:outline-none dark:focus:ring-primary-600">
                                         Сбросить
                                     </button>
                                 </div>
@@ -86,7 +111,7 @@ const TableProducts = () => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {catalogDataItems.slice(paginateBack, paginateForward).map((i) => {
+                                    {products.products.map((i) => {
                                         return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <td className="w-4 px-4 py-3">
                                                 <div className={'flex items-center gap-2'}>
@@ -110,8 +135,8 @@ const TableProducts = () => {
                                             </th>
                                             <td className="px-4 py-2">
                                                 <img
-                                                    src={i.image}
-                                                    alt="food" className="w-auto h-8 mr-3"/>
+                                                  src={i.image.includes('http') ? i.image : `${process.env.REACT_APP_API_URL+'/'+i.image}`}
+                                                  alt="food" className="w-auto h-8 mr-3"/>
                                             </td>
                                             <td className="px-4 py-2">
                                                 {i.title}
@@ -137,11 +162,10 @@ const TableProducts = () => {
                             </div>
                             <div>
                                 <div className={'flex items-center justify-center mt-4'}>
-                                    <button disabled={paginateBack === 0 && paginateForward === 5 ? true : false} type={'button'} onClick={() => {
-                                        setPaginateBack(paginateBack - 5)
-                                        setPaginateForward(paginateForward - 5)
+                                    <button disabled={products.page !== 1 ? false : true} type={'button'} onClick={() => {
+                                        products.setPage(products.page - 1)
                                     }}
-                                            className={`${paginateBack === 0 && paginateForward === 5 ? 'hidden' : 'block'} inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
+                                            className={`${products.page !== 1 ? 'block' : 'hidden'} inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
                                         <svg aria-hidden="true" className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                              xmlns="http://www.w3.org/2000/svg">
                                             <path fillRule="evenodd"
@@ -151,11 +175,10 @@ const TableProducts = () => {
                                         Предыдущий
                                     </button>
                                     <button type={'button'} onClick={() => {
-                                        setPaginateBack(paginateBack + 5)
-                                        setPaginateForward(paginateForward + 5)
+                                        products.setPage(products.page + 1)
                                     }}
-                                            disabled={catalogDataItems.slice(paginateBack, paginateForward).length < 5 ? true : false}
-                                            className={`${catalogDataItems.slice(paginateBack, paginateForward).length < 5 ? 'hidden' : 'block'} inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
+                                            disabled={products.products.length < 2 ? true : false}
+                                            className={`${products.products.length < 2 ? 'hidden' : 'block'} inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
                                         Следующий
                                         <svg aria-hidden="true" className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20"
                                              xmlns="http://www.w3.org/2000/svg">
@@ -165,8 +188,13 @@ const TableProducts = () => {
                                         </svg>
                                     </button>
                                 </div>
-                                <div className={'flex justify-center my-2'}>
-                                    <p className={'text-sm font-medium text-gray-800 dark:text-white'}>{paginateBack + ' - ' + paginateForward}</p>
+                                <div className={'py-3'}>
+                                    <div className={'flex justify-center mt-2'}>
+                                        <p className={'text-sm font-medium text-gray-800 dark:text-white'}>{'Колличество: ' + products.totalCount}</p>
+                                    </div>
+                                    <div className={'flex justify-center mt-2'}>
+                                        <p className={'text-sm font-medium text-gray-800 dark:text-white'}>{'Страница: ' + products.page}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -175,6 +203,6 @@ const TableProducts = () => {
             </div>
         </section>
     );
-};
+});
 
 export default TableProducts;

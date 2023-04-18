@@ -1,7 +1,7 @@
 import {$authHost, $host} from "./index";
 
 export const createProduct = async (product) => {
-  const {data} = await $authHost.post('api/product/', product)
+  const {data} = await $authHost.post('api/product/', product, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}})
   return data
 }
 

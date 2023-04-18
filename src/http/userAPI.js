@@ -17,6 +17,11 @@ export const getUser = async (id) => {
   return data
 }
 
+export const getMe = async (chatId) => {
+  const {data} = await $host.get('api/user/me/' + chatId)
+  return data
+}
+
 export const getMyFavoriteProductItem = async (chatId) => {
   const {data} = await $host.get('api/user/me/favoriteproduct/' + chatId)
   return data

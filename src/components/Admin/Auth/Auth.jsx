@@ -1,24 +1,42 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import Footer from "../../Footer/Footer";
 import Header from "../../Header/Header";
-import { useOutletContext } from "react-router-dom"
 import {observer} from 'mobx-react-lite'
+import {Context} from '../../../index'
+import {getUserToken} from '../../../http/userAPI'
 
 const Auth = observer(() => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState();
     const [password, setPassword] = useState();
-    const [currentUser, setCurrentUser] = useOutletContext()
-
+    const {user} = useContext(Context);
 
     const authToAdmin = () => {
         try {
-            console.log(currentUser)
-            if (String(password) !== 'qwerty' || String(email) !== 'admin@admin.com') {
-                return navigate("/admin/auth");
+            if (String(password) === String(process.env.REACT_APP_ADMIN_PASSWORD)) {
+                getUserToken(String(process.env.REACT_APP_ADMIN_CHATID)).then(data => {
+                    user.setIsAuth(true);
+                    user.setIsAdmin(true)
+                    user.setUser(data)
+                })
+                localStorage.removeItem('auth')
             }
-            setCurrentUser({name: 'chappic', role: 'admin'})
+            if (String(password) === String(process.env.REACT_APP_COPYWRITER_PASSWORD)) {
+                getUserToken(String(process.env.REACT_APP_COPYWRITER_CHATID)).then(data => {
+                    user.setIsAuth(true);
+                    user.setIsCopywriter(true)
+                    user.setUser(data)
+                })
+                localStorage.removeItem('auth')
+            }
+            if (String(password) === String(process.env.REACT_APP_ANALYST_PASSWORD)) {
+                getUserToken(String(process.env.REACT_APP_ANALYST_CHATID)).then(data => {
+                    user.setIsAuth(true);
+                    user.setIsAnalyst(true)
+                    user.setUser(data)
+                })
+                localStorage.removeItem('auth')
+            }
             return navigate("/admin");
         } catch (e) {
             console.log(e)

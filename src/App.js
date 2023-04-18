@@ -63,6 +63,7 @@ import {getUserToken} from './http/userAPI'
 import {observer} from 'mobx-react-lite'
 import Profile from './components/Profile/Profile'
 import AuthFirst from './components/Admin/Auth/AuthFIrst'
+import jwt_decode from 'jwt-decode'
 
 const App = observer(() => {
     // eslint-disable-next-line no-unused-vars
@@ -73,11 +74,26 @@ const App = observer(() => {
         tg.ready();
 
         // 895411068
-        getUserToken('').then(data => {
+        // user.user.chatId
+        const userItem = localStorage.getItem('token')
+        // console.log(jwt_decode(userItem).chatId)
+        getUserToken(userItem ? jwt_decode(userItem).chatId : userTG).then(data => {
+            // console.log(data)
             user.setIsAuth(true);
-            user.setIsAdmin(data.role === 'admin' ? true : false)
+            // console.log(111)
+            if (data.role === 'admin') {
+                user.setIsAdmin(true)
+            }
+            if (data.role === 'copywriter') {
+                user.setIsCopywriter(true)
+            }
+            if (data.role === 'analyst') {
+                user.setIsAnalyst(true)
+            }
             user.setUser(data)
-        }).finally(() => setLoading(false))
+        })
+
+        // .finally(() => setLoading(false))
 
         const checkAdminRoles = () => {
             const item = localStorage.getItem('auth');

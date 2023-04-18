@@ -1,14 +1,13 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { Outlet } from "react-router-dom"
+import {observer} from 'mobx-react-lite'
 
-const Admin = () => {
-    const [currentUser, setCurrentUser] = useState()
-
+const Admin = observer(() => {
     return (
         <div>
-            <Outlet context={[currentUser, setCurrentUser]}/>
+            <Outlet />
         </div>
     );
-};
+});
 
 export default Admin;

@@ -15,6 +15,11 @@ export const getAllOrders = async () => {
   return data
 }
 
+export const getCompletedOrders = async () => {
+  const {data} = await $authHost.get('api/order/all/completed')
+  return data
+}
+
 export const getUserOrder = async (chatId) => {
   const {data} = await $host.get('api/order/user/' + chatId)
   return data

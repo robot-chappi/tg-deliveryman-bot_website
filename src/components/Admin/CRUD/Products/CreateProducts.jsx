@@ -1,20 +1,37 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import Header from "../../Header/Header";
-import {categories, favoriteIngredients, types} from "../../../GenerationWeeklyMealPlan/mockdata";
 import Footer from "../../Footer/Footer";
 import {useNavigate} from "react-router-dom";
+import {observer} from 'mobx-react-lite'
+import {getIngredients} from '../../../../http/ingredientsAPI'
+import {createProduct} from '../../../../http/productAPI'
+import {getCategories} from '../../../../http/categoryAPI'
+import {getTypes} from '../../../../http/typeAPI'
 
-const CreateProducts = () => {
+const CreateProducts = observer(() => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [weight, setWeight] = useState();
     const [price, setPrice] = useState();
     const [image, setImage] = useState();
+    const [imageLink, setImageLink] = useState();
     const [type, setType] = useState();
     const [category, setCategory] = useState();
+    const [ingredientItems, setIngredientItems] = useState([]);
+    const [categoryItems, setCategoryItems] = useState([]);
+    const [typeItems, setTypeItems] = useState([]);
     const [ingredients, setIngredients] = useState([]);
 
+    const [isImageFile, setIsImageFile] = useState(false);
+    const [isImageLink, setIsImageLink] = useState(false);
+
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getIngredients().then(data => setIngredientItems(data))
+        getCategories().then(data => setCategoryItems(data))
+        getTypes().then(data => setTypeItems(data))
+    }, [])
 
     const handleIngredients = (e) => {
         let options = e.target.options;
@@ -35,18 +52,20 @@ const CreateProducts = () => {
         return console.log('error');
     }
 
-    const sendProduct = () => {
+    const sendProduct = async () => {
         try {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
             formData.append('weight', weight);
             formData.append('price', price);
-            formData.append('image', image);
+            if (isImageFile) formData.append('imageFile', image);
+            if (isImageLink) formData.append('image', imageLink);
             formData.append('type', type);
             formData.append('category', category);
-            formData.append('ingredients', ingredients);
+            formData.append('ingredients', JSON.stringify(ingredients));
 
+            await createProduct(formData)
             // return console.log({
             //     'title': title,
             //     'description': description,
@@ -61,6 +80,21 @@ const CreateProducts = () => {
             return navigate('/admin/products')
         } catch (e) {
             console.log(e);
+        }
+    }
+
+    const changeTypesImage = (type) => {
+        if (type === 'file') {
+            setIsImageLink(false)
+            setIsImageFile(true)
+        }
+        if (type === 'link') {
+            setIsImageFile(false)
+            setIsImageLink(true)
+        }
+        if (type === 'reset') {
+            setIsImageLink(false)
+            setIsImageFile(false)
         }
     }
 
@@ -92,15 +126,44 @@ const CreateProducts = () => {
                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                        placeholder='Напишите вес продукта' required={true}/>
                             </div>
-                            <div className='w-full'>
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                       htmlFor="image">Изображение</label>
-                                <input
-                                    onClick={event => handleInputFile(event)}
-                                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                    aria-describedby="file_input_help" id="image" type="file"/>
+                            <div>
+                                <label htmlFor="selectTypesImage"
+                                       className="block text-sm font-medium text-gray-900 dark:text-white">Выбери тип изображения</label>
+                                <div id='selectTypesImage' className={'flex items-center gap-2 pb-2'}>
+                                    <button type={"button"}
+                                            onClick={() => changeTypesImage('file')}
+                                            className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                        Файл
+                                    </button>
+                                    <button type={"button"}
+                                            onClick={() => changeTypesImage('link')}
+                                            className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                        Ссылка
+                                    </button>
+                                    <button type={"button"}
+                                            onClick={() => changeTypesImage('reset')}
+                                            className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                        Сбросить
+                                    </button>
+                                </div>
+                                <div className={`${isImageFile ? 'block' : 'hidden'} w-full`}>
+                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                           htmlFor="imageFile">Изображение (файл)</label>
+                                    <input
+                                      onClick={event => handleInputFile(event)}
+                                      className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                      aria-describedby="file_input_help" id="imageFile" type="file"/>
                                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-300"
                                        id="file_input_help">PNG или JPG (Рекомендовано 300x240px)</p>
+                                </div>
+                                <div className={`${isImageLink ? 'block' : 'hidden'} w-full`}>
+                                    <label htmlFor="imageLink"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Изображение (ссылка)</label>
+                                    <input type="text" name="imageLink" id="imageLink"
+                                           onChange={event => setImageLink(event.target.value)}
+                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                           placeholder="Напишите цену продукта"/>
+                                </div>
                             </div>
                             <div className="w-full">
                                 <label htmlFor="price"
@@ -117,7 +180,7 @@ const CreateProducts = () => {
                                         onChange={event => setCategory(event.target.value)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Выберете категорию</option>
-                                    {categories.map((item) => {
+                                    {categoryItems.map((item) => {
                                         return <option key={item.id} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
@@ -129,7 +192,7 @@ const CreateProducts = () => {
                                         onChange={event => setType(event.target.value)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Выберете тип</option>
-                                    {types.map((item) => {
+                                    {typeItems.map((item) => {
                                         return <option key={item.id} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
@@ -140,7 +203,7 @@ const CreateProducts = () => {
                                 <select multiple={true} id="ingredients"
                                         onChange={(event) => handleIngredients(event)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    {favoriteIngredients.map((item) => {
+                                    {ingredientItems.map((item) => {
                                         return <option key={item.id} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
@@ -165,6 +228,6 @@ const CreateProducts = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default CreateProducts;
