@@ -1,37 +1,24 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getProductWithIngredient} from '../../../../http/productAPI'
+import {observer} from 'mobx-react-lite'
 
-const ReviewProduct = () => {
+const ReviewProduct = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true)
+    const [product, setProduct] = useState({})
 
-    console.log(id)
+    useEffect(() => {
+        getProductWithIngredient(id).then(data => setProduct(data)).finally(() => setLoading(false))
+    }, [])
 
-    const product = {
-        id: 1,
-        title: "Плов",
-        weight: 450,
-        type: {
-            id: 2,
-            title: "Обед"
-        },
-        category: {
-            id: 1,
-            title: "Обычная еда"
-        },
-
-        image: "https://eda.yandex.ru/images/1370147/d2f69ce626823d7b46a9805c92470e46-1100x825.jpg",
-        description: "Суп – это один из лучших путей к благосостоянию и удовольствию. Это своего рода лакомство, которое может поднять дух даже в трудные минуты. Суп – это гармоничное произведение искусства составления меню, в котором сочетаются ароматы и освежающие сочетания.",
-        ingredients: [
-            {id: 6, title: 'Маслины'},
-            {id: 7, title: 'Зелень'},
-            {id: 8, title: 'Чеснок'},
-            {id: 9, title: 'Картофель'},
-            {id: 10, title: 'Белый лук'}
-        ],
-        price: 300
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
     }
 
     return (
@@ -52,7 +39,7 @@ const ReviewProduct = () => {
                     </tr>
                     <tr className="border-b dark:border-gray-700">
                         <th className='px-4 py-3'>Изображение</th>
-                        <td className='px-4 py-3 text-gray-800 dark:text-white'><img src={product.image} alt="Product"/></td>
+                        <td className='px-4 py-3 text-gray-800 dark:text-white'><img src={product.image.includes('http') ? product.image : `${process.env.REACT_APP_API_URL+'/'+product.image}`} alt="Product"/></td>
                     </tr>
                     <tr className="border-b dark:border-gray-700">
                         <th className='px-4 py-3'>Название</th>
@@ -101,6 +88,6 @@ const ReviewProduct = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default ReviewProduct;

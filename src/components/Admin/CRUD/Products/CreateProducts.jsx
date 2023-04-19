@@ -38,7 +38,7 @@ const CreateProducts = observer(() => {
         let value = [];
         for (var i = 0, l = options.length; i < l; i++) {
             if (options[i].selected) {
-                value.push(Number(options[i].value));
+                value.push({id: Number(options[i].value)});
             }
         }
         setIngredients(value);
@@ -46,7 +46,8 @@ const CreateProducts = observer(() => {
 
     const handleInputFile = (image) => {
         let photo = image.target.files[0];
-        if (photo.type === 'image/jpeg' || photo.type === 'image/png') {
+        console.log(image.target.files[0])
+        if (photo.type === 'image/jpeg' || photo.type === 'image/png' || photo.type === 'image/jpg') {
             return setImage(photo);
         }
         return console.log('error');
@@ -59,10 +60,10 @@ const CreateProducts = observer(() => {
             formData.append('description', description);
             formData.append('weight', weight);
             formData.append('price', price);
-            if (isImageFile) formData.append('imageFile', image);
-            if (isImageLink) formData.append('image', imageLink);
-            formData.append('type', type);
-            formData.append('category', category);
+            formData.append('imageFile', image);
+            formData.append('image', imageLink);
+            formData.append('typeId', type);
+            formData.append('categoryId', category);
             formData.append('ingredients', JSON.stringify(ingredients));
 
             await createProduct(formData)
@@ -162,7 +163,7 @@ const CreateProducts = observer(() => {
                                     <input type="text" name="imageLink" id="imageLink"
                                            onChange={event => setImageLink(event.target.value)}
                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                           placeholder="Напишите цену продукта"/>
+                                           placeholder="Ссылка продукта"/>
                                 </div>
                             </div>
                             <div className="w-full">

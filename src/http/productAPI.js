@@ -1,7 +1,7 @@
 import {$authHost, $host} from "./index";
 
 export const createProduct = async (product) => {
-  const {data} = await $authHost.post('api/product/', product, {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}})
+  const {data} = await $authHost.post('api/product/', product, {headers: {'Content-Type': 'multipart/form-data', 'Accept': 'application/json'}})
   return data
 }
 
@@ -22,6 +22,11 @@ export const getPaginationProducts = async (categoryId, typeId, limit, page) => 
 
 export const getProduct = async (id) => {
   const {data} = await $host.get('api/product/' + id)
+  return data
+}
+
+export const getProductWithIngredient = async (id) => {
+  const {data} = await $host.get('api/product/ingredient/' + id)
   return data
 }
 

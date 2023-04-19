@@ -1,47 +1,39 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
-import {categories, favoriteIngredients, types} from "../../../GenerationWeeklyMealPlan/mockdata";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getProductWithIngredient} from '../../../../http/productAPI'
+import {observer} from 'mobx-react-lite'
+import {Context} from '../../../../index'
+import {getCategories} from '../../../../http/categoryAPI'
+import {getTypes} from '../../../../http/typeAPI'
+import {getIngredients} from '../../../../http/ingredientsAPI'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faCircle, faClose} from '@fortawesome/free-solid-svg-icons'
 
-const EditProducts = () => {
-    const product = {
-        id: 1,
-        title: "Плов",
-        weight: 450,
-        type: {
-            id: 2,
-            title: "Обед"
-        },
-        category: {
-            id: 1,
-            title: "Обычная еда"
-        },
-
-        image: "https://eda.yandex.ru/images/1370147/d2f69ce626823d7b46a9805c92470e46-1100x825.jpg",
-        description: "Суп – это один из лучших путей к благосостоянию и удовольствию. Это своего рода лакомство, которое может поднять дух даже в трудные минуты. Суп – это гармоничное произведение искусства составления меню, в котором сочетаются ароматы и освежающие сочетания.",
-        ingredients: [
-            {id: 6, title: 'Маслины'},
-            {id: 7, title: 'Зелень'},
-            {id: 8, title: 'Чеснок'},
-            {id: 9, title: 'Картофель'},
-            {id: 10, title: 'Белый лук'}
-        ],
-        price: 300
-    }
-    // eslint-disable-next-line no-unused-vars
+const EditProducts = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const {products} = useContext(Context)
+    const [ingredientItems, setIngredientItems] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const [title, setTitle] = useState(product.title);
-    const [description, setDescription] = useState(product.description);
-    const [weight, setWeight] = useState(product.weight);
-    const [price, setPrice] = useState(product.price);
-    const [image, setImage] = useState(product.image);
-    const [type, setType] = useState(product.type);
-    const [category, setCategory] = useState(product.category);
-    const [ingredients, setIngredients] = useState(product.ingredients);
+    useEffect(() => {
+        getCategories().then(data => products.setCategories(data))
+        getTypes().then(data => products.setTypes(data))
+        getIngredients().then(data => setIngredientItems(data))
+        getProductWithIngredient(id).then(data => products.setProduct(data)).finally(() => setLoading(false))
+    }, [])
 
+    const [title, setTitle] = useState(products.product.title);
+    const [description, setDescription] = useState(products.product.description);
+    const [weight, setWeight] = useState(products.product.weight);
+    const [price, setPrice] = useState(products.product.price);
+    const [image, setImage] = useState();
+    const [imageLink, setImageLink] = useState(products.product.image);
+    const [type, setType] = useState(products.product.type);
+    const [category, setCategory] = useState(products.product.category);
+    const [ingredients, setIngredients] = useState(products.product.ingredients);
 
     const handleIngredients = (e) => {
         let options = e.target.options;
@@ -69,23 +61,13 @@ const EditProducts = () => {
             formData.append('description', description);
             formData.append('weight', weight);
             formData.append('price', price);
+            formData.append('imageFile', imageLink);
             formData.append('image', image);
             formData.append('type', type);
             formData.append('category', category);
             formData.append('ingredients', ingredients);
 
-            // return console.log({
-            //     'title': title,
-            //     'description': description,
-            //     'weight': weight,
-            //     'price': price,
-            //     'image': image,
-            //     'type': type,
-            //     'category': category,
-            //     'ingredients': ingredients,
-            // });
-
-            return navigate(`/admin/products/show/${product.id}`)
+            return navigate(`/admin/products/show/${products.product.id}`)
         } catch (e) {
             console.log(e);
         }
@@ -101,6 +83,11 @@ const EditProducts = () => {
         return false;
     }
 
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div>
@@ -134,7 +121,8 @@ const EditProducts = () => {
                             </div>
                             <div className='w-full'>
                                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                       htmlFor="image">Изображение</label>
+                                       htmlFor="image">Изображение (файл) <FontAwesomeIcon icon={faCircle} color={imageLink.includes('http') ? 'white' : 'green'}/>
+                                </label>
                                 <input
                                     onClick={event => handleInputFile(event)}
                                     className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
@@ -142,7 +130,16 @@ const EditProducts = () => {
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-300"
                                    id="file_input_help">PNG или JPG (Рекомендовано 300x240px)</p>
                                 <div className={'mt-2'}>
-                                    <img src={image} alt="product"/>
+                                    <img src={imageLink.includes('http') ? imageLink : `${process.env.REACT_APP_API_URL+'/'+imageLink}`} alt="product"/>
+                                </div>
+                                <div className={'w-full pt-2'}>
+                                    <label htmlFor="imageLink"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Изображение (ссылка) <FontAwesomeIcon icon={faCircle} color={imageLink.includes('http') ? 'green' : 'white'}/></label>
+                                    <input type="text" name="imageLink" id="imageLink"
+                                           onChange={event => setImageLink(event.target.value)}
+                                           value={imageLink}
+                                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                           placeholder="Ссылка продукта"/>
                                 </div>
                             </div>
                             <div className="w-full">
@@ -161,8 +158,8 @@ const EditProducts = () => {
                                         onChange={event => setCategory(event.target.value)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Выберете категорию</option>
-                                    {categories.map((item) => {
-                                        return <option key={item.id} selected={category.id === item.id ? true : false} value={item.id}>{item.title}</option>
+                                    {products.categories.map((item) => {
+                                        return <option key={item.id} selected={category?.id === item.id ? true : false} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
                             </div>
@@ -173,8 +170,8 @@ const EditProducts = () => {
                                         onChange={event => setType(event.target.value)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Выберете тип</option>
-                                    {types.map((item) => {
-                                        return <option key={item.id} selected={type.id === item.id ? true : false} value={item.id}>{item.title}</option>
+                                    {products.types.map((item) => {
+                                        return <option key={item.id} selected={type?.id === item.id ? true : false} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
                             </div>
@@ -184,7 +181,7 @@ const EditProducts = () => {
                                 <select multiple={true} id="ingredients"
                                         onChange={(event) => handleIngredients(event)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    {favoriteIngredients.map((item) => {
+                                    {ingredientItems.map((item) => {
                                         return <option key={item.id} selected={containsObject(item, ingredients)} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
@@ -209,6 +206,6 @@ const EditProducts = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditProducts;
