@@ -2,45 +2,60 @@ import React, {useContext, useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
-import {getProductWithIngredient} from '../../../../http/productAPI'
+import {getProductWithIngredient, patchProduct} from '../../../../http/productAPI'
 import {observer} from 'mobx-react-lite'
 import {Context} from '../../../../index'
 import {getCategories} from '../../../../http/categoryAPI'
 import {getTypes} from '../../../../http/typeAPI'
 import {getIngredients} from '../../../../http/ingredientsAPI'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCircle, faClose} from '@fortawesome/free-solid-svg-icons'
+import {faCircle} from '@fortawesome/free-solid-svg-icons'
 
 const EditProducts = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
     const {products} = useContext(Context)
     const [ingredientItems, setIngredientItems] = useState([]);
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [weight, setWeight] = useState();
+    const [price, setPrice] = useState();
+    const [image, setImage] = useState();
+    const [imageLink, setImageLink] = useState();
+    const [imageLinkVisual, setImageLinkVisual] = useState();
+    const [type, setType] = useState({});
+    const [category, setCategory] = useState({});
+    const [ingredients, setIngredients] = useState([]);
+    // const [IngredientsChecked, setIngredientsChecked] = useState(false);
+
     const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         getCategories().then(data => products.setCategories(data))
         getTypes().then(data => products.setTypes(data))
         getIngredients().then(data => setIngredientItems(data))
-        getProductWithIngredient(id).then(data => products.setProduct(data)).finally(() => setLoading(false))
+        getProductWithIngredient(id).then(data => {
+            setTitle(data.title)
+            setDescription(data.description)
+            setWeight(data.weight)
+            setPrice(data.price)
+            setImageLinkVisual(data.image)
+            setType(data.type)
+            setCategory(data.category)
+            setIngredients(data.ingredients)
+            products.setProduct(data)
+        }).finally(() => setLoading(false))
     }, [])
 
-    const [title, setTitle] = useState(products.product.title);
-    const [description, setDescription] = useState(products.product.description);
-    const [weight, setWeight] = useState(products.product.weight);
-    const [price, setPrice] = useState(products.product.price);
-    const [image, setImage] = useState();
-    const [imageLink, setImageLink] = useState(products.product.image);
-    const [type, setType] = useState(products.product.type);
-    const [category, setCategory] = useState(products.product.category);
-    const [ingredients, setIngredients] = useState(products.product.ingredients);
 
     const handleIngredients = (e) => {
         let options = e.target.options;
         let value = [];
         for (var i = 0, l = options.length; i < l; i++) {
             if (options[i].selected) {
-                value.push(Number(options[i].value));
+                value.push({id: Number(options[i].value)});
             }
         }
         setIngredients(value);
@@ -48,24 +63,26 @@ const EditProducts = observer(() => {
 
     const handleInputFile = (image) => {
         let photo = image.target.files[0];
-        if (photo.type === 'image/jpeg' || photo.type === 'image/png') {
-            return setImage(photo);
+        if (photo.type === 'image/jpeg' || photo.type === 'image/png' || photo.type === 'image/jpg') {
+            return setImage(image.target.files[0]);
         }
         return console.log('error');
     }
 
-    const sendProduct = () => {
+    const sendProduct = async () => {
         try {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
             formData.append('weight', weight);
             formData.append('price', price);
-            formData.append('imageFile', imageLink);
-            formData.append('image', image);
-            formData.append('type', type);
-            formData.append('category', category);
-            formData.append('ingredients', ingredients);
+            formData.append('imageFile', image);
+            formData.append('image', imageLink ? imageLink : imageLinkVisual);
+            formData.append('typeId', type.id);
+            formData.append('categoryId', category.id);
+            formData.append('ingredients', JSON.stringify(ingredients));
+
+            await patchProduct(products.product.id, formData);
 
             return navigate(`/admin/products/show/${products.product.id}`)
         } catch (e) {
@@ -81,6 +98,10 @@ const EditProducts = observer(() => {
             }
         }
         return false;
+    }
+
+    function insertSpaces(aString) {
+        return aString.slice(0, 45) + '...';
     }
 
     if (loading) {
@@ -121,20 +142,21 @@ const EditProducts = observer(() => {
                             </div>
                             <div className='w-full'>
                                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                       htmlFor="image">Изображение (файл) <FontAwesomeIcon icon={faCircle} color={imageLink.includes('http') ? 'white' : 'green'}/>
+                                       htmlFor="image">Изображение (файл) <FontAwesomeIcon icon={faCircle} color={imageLinkVisual.includes('http') ? 'white' : 'green'}/>
                                 </label>
                                 <input
-                                    onClick={event => handleInputFile(event)}
+                                    onChange={event => handleInputFile(event)}
                                     className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                                     aria-describedby="file_input_help" id="image" type="file"/>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-300"
                                    id="file_input_help">PNG или JPG (Рекомендовано 300x240px)</p>
                                 <div className={'mt-2'}>
-                                    <img src={imageLink.includes('http') ? imageLink : `${process.env.REACT_APP_API_URL+'/'+imageLink}`} alt="product"/>
+                                    <img src={imageLinkVisual.includes('http') ? imageLinkVisual : `${process.env.REACT_APP_API_URL+'/'+imageLinkVisual}`} alt="product"/>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">{insertSpaces(imageLinkVisual)}</p>
                                 </div>
                                 <div className={'w-full pt-2'}>
                                     <label htmlFor="imageLink"
-                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Изображение (ссылка) <FontAwesomeIcon icon={faCircle} color={imageLink.includes('http') ? 'green' : 'white'}/></label>
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Изображение (ссылка) <FontAwesomeIcon icon={faCircle} color={imageLinkVisual.includes('http') ? 'green' : 'white'}/></label>
                                     <input type="text" name="imageLink" id="imageLink"
                                            onChange={event => setImageLink(event.target.value)}
                                            value={imageLink}
@@ -186,6 +208,7 @@ const EditProducts = observer(() => {
                                     })}
                                 </select>
                             </div>
+
                             <div className="sm:col-span-2">
                                 <label htmlFor="description"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Описание продукта</label>

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
@@ -10,6 +10,7 @@ import {observer} from 'mobx-react-lite'
 
 const TableProducts = observer(() => {
     const {products} = useContext(Context);
+    // const [deleteCheck, setDeleteCheck] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,8 +37,10 @@ const TableProducts = observer(() => {
         return navigate(`/admin/products/edit/${id}`);
     }
 
-    const deleteProduct = (id) => {
-        return navigate('/admin')
+    const deleteProduct = async (id) => {
+        await deleteProduct(id)
+        // setDeleteCheck(!deleteCheck)
+        // return navigate('/admin')
     }
 
     return (

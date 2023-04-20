@@ -36,6 +36,6 @@ export const deleteProduct = async (id) => {
 }
 
 export const patchProduct = async (id, product) => {
-  const {data} = await $authHost.patch('api/product/' + id, product)
+  const {data} = await $authHost.patch('api/product/' + id, product, {headers: {'Content-Type': 'multipart/form-data', 'Accept': 'application/json'}})
   return data
 }
