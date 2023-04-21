@@ -1,15 +1,21 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {categories} from "../../../../GenerationWeeklyMealPlan/mockdata";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
+import {getCategories} from '../../../../../http/categoryAPI'
+import {observer} from 'mobx-react-lite'
 
-const TableCategories = () => {
+const TableCategories = observer(() => {
     // eslint-disable-next-line no-unused-vars
-    const [categoryItems, setCategoryItems] = useState(categories);
+    const [categoryItems, setCategoryItems] = useState([]);
     const [paginateBack, setPaginateBack] = useState(0);
     const [paginateForward, setPaginateForward] = useState(5);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getCategories().then(data => setCategoryItems(data))
+    }, [])
 
     const openCategory = (id) => {
         return navigate(`/admin/categories/show/${id}`);
@@ -136,6 +142,6 @@ const TableCategories = () => {
             </div>
         </section>
     );
-};
+});
 
 export default TableCategories;

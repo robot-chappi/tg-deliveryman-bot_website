@@ -5,12 +5,12 @@ import {useNavigate} from "react-router-dom";
 import {Context} from '../../../../../index'
 import {getCategories} from '../../../../../http/categoryAPI'
 import {getTypes} from '../../../../../http/typeAPI'
-import {getPaginationProducts} from '../../../../../http/productAPI'
+import {deleteProduct, getPaginationProducts} from '../../../../../http/productAPI'
 import {observer} from 'mobx-react-lite'
 
 const TableProducts = observer(() => {
     const {products} = useContext(Context);
-    // const [deleteCheck, setDeleteCheck] = useState(false);
+    const [deleteCheck, setDeleteCheck] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ const TableProducts = observer(() => {
             products.setProducts(data.rows)
             products.setTotalCount(data.count)
         })
-    }, [products.page, products.selectedType, products.selectedCategory])
+    }, [products.page, products.selectedType, products.selectedCategory, deleteCheck])
 
     const openProduct = (id) => {
         return navigate(`/admin/products/show/${id}`);
@@ -37,10 +37,9 @@ const TableProducts = observer(() => {
         return navigate(`/admin/products/edit/${id}`);
     }
 
-    const deleteProduct = async (id) => {
+    const deleteProductItem = async (id) => {
         await deleteProduct(id)
-        // setDeleteCheck(!deleteCheck)
-        // return navigate('/admin')
+        setDeleteCheck(deleteCheck + 1)
     }
 
     return (
@@ -126,7 +125,7 @@ const TableProducts = observer(() => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteProduct(i.id)}
+                                                    <button type="button" onClick={() => deleteProductItem(i.id)}
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faMinus}/>
                                                     </button>
