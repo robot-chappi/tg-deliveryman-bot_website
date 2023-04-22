@@ -1,15 +1,21 @@
-import React, {useState} from 'react';
-import {types} from "../../../../GenerationWeeklyMealPlan/mockdata";
+import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
+import {observer} from 'mobx-react-lite'
+import {deleteType, getTypes} from '../../../../../http/typeAPI'
 
-const TableTypes = () => {
+const TableTypes = observer(() => {
     // eslint-disable-next-line no-unused-vars
-    const [typeItems, setTypeItems] = useState(types);
+    const [typeItems, setTypeItems] = useState([]);
     const [paginateBack, setPaginateBack] = useState(0);
     const [paginateForward, setPaginateForward] = useState(5);
+    const [reloadPage, setReloadPage] = useState(0);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getTypes().then(data => setTypeItems(data))
+    }, [reloadPage])
 
     const openType = (id) => {
         return navigate(`/admin/types/show/${id}`);
@@ -19,8 +25,9 @@ const TableTypes = () => {
         return navigate(`/admin/types/edit/${id}`);
     }
 
-    const deleteType = (id) => {
-        return navigate('/admin')
+    const deleteTypeItem = async (id) => {
+        await deleteType(id);
+        setReloadPage(reloadPage + 1)
     }
 
     return (
@@ -66,7 +73,7 @@ const TableTypes = () => {
                                     </thead>
                                     <tbody>
                                     {typeItems.slice(paginateBack, paginateForward).map((i) => {
-                                        return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        return <tr key={i.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <td className="w-4 px-4 py-3">
                                                 <div className={'flex items-center gap-2'}>
                                                     <button type="button" onClick={() => openType(i.id)}
@@ -77,7 +84,7 @@ const TableTypes = () => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteType(i.id)}
+                                                    <button type="button" onClick={() => deleteTypeItem(i.id)}
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faMinus}/>
                                                     </button>
@@ -136,6 +143,6 @@ const TableTypes = () => {
             </div>
         </section>
     );
-};
+});
 
 export default TableTypes;

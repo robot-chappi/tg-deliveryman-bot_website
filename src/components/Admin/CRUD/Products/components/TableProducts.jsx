@@ -114,7 +114,7 @@ const TableProducts = observer(() => {
                                     </thead>
                                     <tbody>
                                     {products.products.map((i) => {
-                                        return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        return <tr key={i.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <td className="w-4 px-4 py-3">
                                                 <div className={'flex items-center gap-2'}>
                                                     <button type="button" onClick={() => openProduct(i.id)}

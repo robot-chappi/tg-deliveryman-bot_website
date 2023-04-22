@@ -1,36 +1,38 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {observer} from 'mobx-react-lite'
+import {getPrivilege, patchPrivilege} from '../../../../http/privilegeAPI'
 
-const EditPrivileges = () => {
-    const privilege = {
-        id: 1,
-        title: 'Качество продуктов'
-    }
-
+const EditPrivileges = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true)
+    const [title, setTitle] = useState('');
 
-    const [title, setTitle] = useState(privilege.title);
+    useEffect(() => {
+        getPrivilege(id).then(data => {
+            setTitle(data.title);
+        }).finally(() => setLoading(false))
+    }, [])
 
-
-    const sendPrivilege = () => {
+    const sendPrivilege = async () => {
         try {
-            const formData = new FormData();
-            formData.append('title', title);
+            await patchPrivilege(id, {title: title})
 
-            // return console.log({
-            //     'title': title,
-            // });
-
-            return navigate(`/admin/privileges/show/${privilege.id}`)
+            return navigate(`/admin/privileges/show/${id}`)
         } catch (e) {
             console.log(e);
         }
     }
 
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div>
@@ -65,6 +67,6 @@ const EditPrivileges = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditPrivileges;

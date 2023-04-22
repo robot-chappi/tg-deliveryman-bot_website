@@ -1,39 +1,42 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {observer} from 'mobx-react-lite'
+import {getFaq, patchFaq} from '../../../../http/faqAPI'
 
-const EditFAQs = () => {
-    const faq = {
-            id: 3,
-            title: 'Как работать с доставкой?',
-            description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
-        }
-
+const EditFAQs = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
 
-    const [title, setTitle] = useState(faq.title);
-    const [description, setDescription] = useState(faq.description);
+    const [title, setTitle] = useState();
+    const [description, setDescription] = useState();
+    const [loading, setLoading] = useState(true);
 
 
-    const sendFAQ = () => {
+    useEffect(() => {
+        getFaq(id).then(data => {
+            setTitle(data.title)
+            setDescription(data.description)
+        }).finally(() => setLoading(false))
+    }, [])
+
+    const sendFAQ = async () => {
         try {
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', description);
+            await patchFaq(id, {title: title, description: description})
 
-            // return console.log({
-            //     'title': title,
-            // });
-
-            return navigate(`/admin/faqs/show/${faq.id}`)
+            return navigate(`/admin/faqs/show/${id}`)
         } catch (e) {
             console.log(e);
         }
     }
 
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div>
@@ -78,6 +81,6 @@ const EditFAQs = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditFAQs;

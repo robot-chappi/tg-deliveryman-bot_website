@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import {categories} from "../../../../GenerationWeeklyMealPlan/mockdata";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
-import {getCategories} from '../../../../../http/categoryAPI'
+import {deleteCategory, getCategories} from '../../../../../http/categoryAPI'
 import {observer} from 'mobx-react-lite'
 
 const TableCategories = observer(() => {
@@ -11,11 +10,12 @@ const TableCategories = observer(() => {
     const [categoryItems, setCategoryItems] = useState([]);
     const [paginateBack, setPaginateBack] = useState(0);
     const [paginateForward, setPaginateForward] = useState(5);
+    const [reloadPage, setReloadPage] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
         getCategories().then(data => setCategoryItems(data))
-    }, [])
+    }, [reloadPage])
 
     const openCategory = (id) => {
         return navigate(`/admin/categories/show/${id}`);
@@ -25,8 +25,9 @@ const TableCategories = observer(() => {
         return navigate(`/admin/categories/edit/${id}`);
     }
 
-    const deleteCategory = (id) => {
-        return navigate('/admin')
+    const deleteCategoryItem = async (id) => {
+        await deleteCategory(id);
+        setReloadPage(reloadPage + 1)
     }
 
     return (
@@ -72,7 +73,7 @@ const TableCategories = observer(() => {
                                     </thead>
                                     <tbody>
                                     {categoryItems.slice(paginateBack, paginateForward).map((i) => {
-                                        return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        return <tr key={i.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <td className="w-4 px-4 py-3">
                                                 <div className={'flex items-center gap-2'}>
                                                     <button type="button" onClick={() => openCategory(i.id)}
@@ -83,7 +84,7 @@ const TableCategories = observer(() => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteCategory(i.id)}
+                                                    <button type="button" onClick={() => deleteCategoryItem(i.id)}
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faMinus}/>
                                                     </button>

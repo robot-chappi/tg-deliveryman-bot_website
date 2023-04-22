@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getCategory} from '../../../../http/categoryAPI'
+import {observer} from 'mobx-react-lite'
 
-const ReviewCategories = () => {
+const ReviewCategories = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const [category, setCategory] = useState({})
 
-    console.log(id)
-
-    const category = {
-        id: 1,
-        title: "Обычная еда"
-    }
+    useEffect(() => {
+        getCategory(id).then(data => setCategory(data))
+    }, [])
 
 
     return (
@@ -48,6 +48,6 @@ const ReviewCategories = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default ReviewCategories;

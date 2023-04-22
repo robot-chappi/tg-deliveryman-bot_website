@@ -1,19 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getPrivilege} from '../../../../http/privilegeAPI'
+import {observer} from 'mobx-react-lite'
 
-const ReviewPrivileges = () => {
+const ReviewPrivileges = observer(() => {
     const {id} = useParams();
+    const [privilege, setPrivilege] = useState({})
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true)
 
-    console.log(id)
+    useEffect(() => {
+       getPrivilege(id).then(data => setPrivilege(data)).finally(() => setLoading(false))
+    }, [])
 
-    const privilege = {
-        id: 1,
-        title: 'Качество продуктов'
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
     }
-
 
     return (
         <div className={'bg-gray-50 dark:bg-gray-900'}>
@@ -48,6 +54,6 @@ const ReviewPrivileges = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default ReviewPrivileges;

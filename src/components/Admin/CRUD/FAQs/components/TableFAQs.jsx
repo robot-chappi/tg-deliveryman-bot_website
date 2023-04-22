@@ -1,15 +1,31 @@
-import React, {useState} from 'react';
-import {faqs} from "../../../../GenerationWeeklyMealPlan/mockdata";
+import React, {useContext, useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
+import {deleteFaq, getPaginationFaqs} from '../../../../../http/faqAPI'
+import {observer} from 'mobx-react-lite'
+import {Context} from '../../../../../index'
 
-const TableFAQs = () => {
+const TableFAQs = observer(() => {
     // eslint-disable-next-line no-unused-vars
-    const [faqItems, setFaqItems] = useState(faqs);
-    const [paginateBack, setPaginateBack] = useState(0);
-    const [paginateForward, setPaginateForward] = useState(5);
+    const {main} = useContext(Context);
+    const [reloadPage, setReloadPage] = useState(0);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getPaginationFaqs(3,1).then(data => {
+            main.setFaqs(data.rows)
+            main.setTotalCountFaqs(data.count)
+        })
+    }, [])
+
+    useEffect(() => {
+        getPaginationFaqs(2, main.pageFaqs).then(data => {
+            main.setFaqs(data.rows)
+            main.setTotalCountFaqs(data.count)
+        })
+    }, [main.pageFaqs, reloadPage])
+
 
     const openFaq = (id) => {
         return navigate(`/admin/faqs/show/${id}`);
@@ -19,8 +35,9 @@ const TableFAQs = () => {
         return navigate(`/admin/faqs/edit/${id}`);
     }
 
-    const deleteFaq = (id) => {
-        return navigate('/admin')
+    const deleteFaqItem = async (id) => {
+        await deleteFaq(id);
+        setReloadPage(reloadPage + 1)
     }
 
     return (
@@ -38,7 +55,7 @@ const TableFAQs = () => {
                                 <div className="flex items-center flex-1 space-x-4">
                                     <h5>
                                         <span className="text-gray-500">Всего FAQs: </span>
-                                        <span className="dark:text-white">{faqItems.length}</span>
+                                        <span className="dark:text-white">{main.faqs.length}</span>
                                     </h5>
                                 </div>
                                 <div
@@ -66,8 +83,8 @@ const TableFAQs = () => {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {faqItems.slice(paginateBack, paginateForward).map((i) => {
-                                        return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    {main.faqs.map((i) => {
+                                        return <tr key={i.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <td className="w-4 px-4 py-3">
                                                 <div className={'flex items-center gap-2'}>
                                                     <button type="button" onClick={() => openFaq(i.id)}
@@ -78,7 +95,7 @@ const TableFAQs = () => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteFaq(i.id)}
+                                                    <button type="button" onClick={() => deleteFaqItem(i.id)}
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faMinus}/>
                                                     </button>
@@ -102,11 +119,10 @@ const TableFAQs = () => {
                             </div>
                             <div>
                                 <div className={'flex items-center justify-center mt-4'}>
-                                    <button disabled={paginateBack === 0 && paginateForward === 5 ? true : false} type={'button'} onClick={() => {
-                                        setPaginateBack(paginateBack - 5)
-                                        setPaginateForward(paginateForward - 5)
+                                    <button disabled={main.pageFaqs !== 1 ? false : true} type={'button'} onClick={() => {
+                                        main.setPageFaqs(main.pageFaqs - 1)
                                     }}
-                                            className={`${paginateBack === 0 && paginateForward === 5 ? 'hidden' : 'block'} inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
+                                            className={`${main.pageFaqs !== 1 ? 'block' : 'hidden'} inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
                                         <svg aria-hidden="true" className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"
                                              xmlns="http://www.w3.org/2000/svg">
                                             <path fillRule="evenodd"
@@ -116,11 +132,10 @@ const TableFAQs = () => {
                                         Предыдущий
                                     </button>
                                     <button type={'button'} onClick={() => {
-                                        setPaginateBack(paginateBack + 5)
-                                        setPaginateForward(paginateForward + 5)
+                                        main.setPageFaqs(main.pageFaqs + 1)
                                     }}
-                                            disabled={faqItems.slice(paginateBack, paginateForward).length < 5 ? true : false}
-                                            className={`${faqItems.slice(paginateBack, paginateForward).length < 5 ? 'hidden' : 'block'} inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
+                                            disabled={main.faqs.length < 2 ? true : false}
+                                            className={`${main.faqs.length < 2 ? 'hidden' : 'block'} inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}>
                                         Следующий
                                         <svg aria-hidden="true" className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20"
                                              xmlns="http://www.w3.org/2000/svg">
@@ -130,8 +145,13 @@ const TableFAQs = () => {
                                         </svg>
                                     </button>
                                 </div>
-                                <div className={'flex justify-center my-2'}>
-                                    <p className={'text-sm font-medium text-gray-800 dark:text-white'}>{paginateBack + ' - ' + paginateForward}</p>
+                                <div className={'py-3'}>
+                                    <div className={'flex justify-center mt-2'}>
+                                        <p className={'text-sm font-medium text-gray-800 dark:text-white'}>{'Колличество: ' + main.totalCountFaqs}</p>
+                                    </div>
+                                    <div className={'flex justify-center mt-2'}>
+                                        <p className={'text-sm font-medium text-gray-800 dark:text-white'}>{'Страница: ' + main.pageFaqs}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -140,6 +160,6 @@ const TableFAQs = () => {
             </div>
         </section>
     );
-};
+});
 
 export default TableFAQs;

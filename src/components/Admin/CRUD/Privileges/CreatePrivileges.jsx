@@ -2,20 +2,16 @@ import React, {useState} from 'react';
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import {useNavigate} from "react-router-dom";
+import {createPrivilege} from '../../../../http/privilegeAPI'
+import {observer} from 'mobx-react-lite'
 
-const CreatePrivileges = () => {
+const CreatePrivileges = observer(() => {
     const [title, setTitle] = useState('');
-
     const navigate = useNavigate();
 
-    const sendPrivilege = () => {
+    const sendPrivilege = async () => {
         try {
-            const formData = new FormData();
-            formData.append('title', title);
-
-            // return console.log({
-            //     'title': title,
-            // });
+            await createPrivilege({title: title})
 
             return navigate('/admin/privileges')
         } catch (e) {
@@ -55,6 +51,6 @@ const CreatePrivileges = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default CreatePrivileges;

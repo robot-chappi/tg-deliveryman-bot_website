@@ -1,7 +1,7 @@
 import {$authHost, $host} from "./index";
 
 export const createTariff = async (tariff) => {
-  const {data} = await $authHost.post('api/tariff/', tariff)
+  const {data} = await $authHost.post('api/tariff/', tariff, {headers: {'Content-Type': 'multipart/form-data', 'Accept': 'application/json'}})
   return data
 }
 
@@ -21,6 +21,6 @@ export const deleteTariff = async (id) => {
 }
 
 export const patchTariff = async (id, tariff) => {
-  const {data} = await $authHost.patch('api/tariff/' + id, tariff)
+  const {data} = await $authHost.patch('api/tariff/' + id, tariff, {headers: {'Content-Type': 'multipart/form-data', 'Accept': 'application/json'}})
   return data
 }

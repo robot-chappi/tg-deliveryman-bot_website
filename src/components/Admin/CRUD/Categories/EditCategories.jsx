@@ -1,36 +1,39 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getCategory, patchCategory} from '../../../../http/categoryAPI'
+import {observer} from 'mobx-react-lite'
 
-const EditCategories = () => {
-    const category = {
-        id: 1,
-        title: "Обычная еда"
-    }
-
+const EditCategories = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
 
-    const [title, setTitle] = useState(category.title);
+    const [title, setTitle] = useState('');
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        getCategory(id).then(data => {
+            setTitle(data.title)
+        }).finally(() => setLoading(false))
+    }, [])
 
-    const sendCategory = () => {
+    const sendCategory = async () => {
         try {
-            const formData = new FormData();
-            formData.append('title', title);
+            await patchCategory(id, {title: title})
 
-            // return console.log({
-            //     'title': title,
-            // });
-
-            return navigate(`/admin/products/show/${category.id}`)
+            return navigate(`/admin/categories/show/${id}`)
         } catch (e) {
             console.log(e);
         }
     }
 
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div>
@@ -65,6 +68,6 @@ const EditCategories = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditCategories;

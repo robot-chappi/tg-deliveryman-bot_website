@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getType} from '../../../../http/typeAPI'
+import {observer} from 'mobx-react-lite'
 
-const ReviewTypes = () => {
+const ReviewTypes = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const [type, setType] = useState({})
 
-    console.log(id)
-
-    const type = {
-            id: 1,
-            title: "Завтрак"
-        }
+    useEffect(() => {
+        getType(id).then(data => setType(data))
+    }, [])
 
 
     return (
@@ -48,6 +48,6 @@ const ReviewTypes = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default ReviewTypes;

@@ -1,19 +1,27 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import {useNavigate} from "react-router-dom";
 import {privileges} from "../../../GenerationWeeklyMealPlan/mockdata";
+import {createTariff} from '../../../../http/tariffAPI'
+import {getPrivileges} from '../../../../http/privilegeAPI'
+import {observer} from 'mobx-react-lite'
 
-const CreateTariff = () => {
+const CreateTariff = observer(() => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState();
-    const [privilege, setPrivilege] = useState();
+    const [privilege, setPrivilege] = useState([]);
+    const [privilegeItems, setPrivilegeItems] = useState([]);
     const [discount, setDiscount] = useState();
 
     const navigate = useNavigate();
 
-    const sendTariff = () => {
+    useEffect(() => {
+        getPrivileges().then(data => setPrivilegeItems(data))
+    }, [])
+
+    const sendTariff = async () => {
         try {
             const formData = new FormData();
             formData.append('title', title);
@@ -21,10 +29,9 @@ const CreateTariff = () => {
             formData.append('price', price);
             formData.append('privilege', privilege);
             formData.append('discount', discount);
+            formData.append('privileges', JSON.stringify(privilege));
 
-            // return console.log({
-            //     'title': title,
-            // });
+            await createTariff(formData);
 
             return navigate('/admin/tariff')
         } catch (e) {
@@ -37,7 +44,8 @@ const CreateTariff = () => {
         let value = [];
         for (var i = 0, l = options.length; i < l; i++) {
             if (options[i].selected) {
-                value.push(Number(options[i].value));
+                value.push({id: Number(options[i].value)
+            });
             }
         }
         setPrivilege(value);
@@ -96,7 +104,7 @@ const CreateTariff = () => {
                                 <select multiple={true} id="privilege"
                                         onChange={(event) => handlePrivilege(event)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    {privileges.map((item) => {
+                                    {privilegeItems.map((item) => {
                                         return <option key={item.id} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
@@ -113,6 +121,6 @@ const CreateTariff = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default CreateTariff;

@@ -2,20 +2,17 @@ import React, {useState} from 'react';
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import {useNavigate} from "react-router-dom";
+import {createCategory} from '../../../../http/categoryAPI'
+import {createType} from '../../../../http/typeAPI'
 
 const CreateTypes = () => {
     const [title, setTitle] = useState('');
 
     const navigate = useNavigate();
 
-    const sendType = () => {
+    const sendType = async () => {
         try {
-            const formData = new FormData();
-            formData.append('title', title);
-
-            // return console.log({
-            //     'title': title,
-            // });
+            await createType({title: title})
 
             return navigate('/admin/types')
         } catch (e) {

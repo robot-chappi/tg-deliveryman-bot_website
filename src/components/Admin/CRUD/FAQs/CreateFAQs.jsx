@@ -2,22 +2,18 @@ import React, {useState} from 'react';
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import {useNavigate} from "react-router-dom";
+import {observer} from 'mobx-react-lite'
+import {createFaq} from '../../../../http/faqAPI'
 
-const CreateFAQs = () => {
+const CreateFAQs = observer(() => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
 
     const navigate = useNavigate();
 
-    const sendFAQ = () => {
+    const sendFAQ = async () => {
         try {
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', description);
-
-            // return console.log({
-            //     'title': title,
-            // });
+            await createFaq({title: title, description: description})
 
             return navigate('/admin/faqs')
         } catch (e) {
@@ -47,7 +43,7 @@ const CreateFAQs = () => {
                             </div>
                             <div className="sm:col-span-2">
                                 <label htmlFor="description"
-                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Описание
+                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Описание (мин. 15 символов)
                                 </label>
                                 <input type="text" name="description" id="description"
                                        onChange={event => setDescription(event.target.value)}
@@ -66,6 +62,6 @@ const CreateFAQs = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default CreateFAQs;

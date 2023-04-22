@@ -1,20 +1,24 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getFaq} from '../../../../http/faqAPI'
 
 const ReviewFAQs = () => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const [faq, setFaq] = useState({});
+    const [loading, setLoading] = useState(true);
 
-    console.log(id)
+    useEffect(() => {
+        getFaq(id).then(data => setFaq(data)).finally(() => setLoading(false))
+    }, [])
 
-    const faq = {
-            id: 3,
-            title: 'Как работать с доставкой?',
-            description: 'А ниже можно подать заявку на проведение фотосъёмки, заказать планшет с приложением, рекламные офлайн-материалы или упаковку для блюд с доставкой по Москве.'
-        }
-
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div className={'bg-gray-50 dark:bg-gray-900'}>

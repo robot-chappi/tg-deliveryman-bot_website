@@ -1,15 +1,23 @@
-import React, {useState} from 'react';
-import {tariff} from "../../../../GenerationWeeklyMealPlan/mockdata";
+import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
+import {deleteTariff, getTariffs} from '../../../../../http/tariffAPI'
+import {observer} from 'mobx-react-lite'
 
-const TableTariff = () => {
+const TableTariff = observer(() => {
     // eslint-disable-next-line no-unused-vars
-    const [tariffItems, setTariffItems] = useState(tariff);
+    const [tariffItems, setTariffItems] = useState([]);
     const [paginateBack, setPaginateBack] = useState(0);
     const [paginateForward, setPaginateForward] = useState(5);
+    const [reloadPage, setReloadPage] = useState(0);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getTariffs().then(data => setTariffItems(data))
+    }, [reloadPage])
+
+    console.log(tariffItems)
 
     const openTariff = (id) => {
         return navigate(`/admin/tariff/show/${id}`);
@@ -19,8 +27,9 @@ const TableTariff = () => {
         return navigate(`/admin/tariff/edit/${id}`);
     }
 
-    const deleteTariff = (id) => {
-        return navigate('/admin')
+    const deleteTariffItem = async (id) => {
+        await deleteTariff(id);
+        setReloadPage(reloadPage + 1)
     }
 
     return (
@@ -70,7 +79,7 @@ const TableTariff = () => {
                                     </thead>
                                     <tbody>
                                     {tariffItems.slice(paginateBack, paginateForward).map((i) => {
-                                        return <tr className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        return <tr key={i.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <td className="w-4 px-4 py-3">
                                                 <div className={'flex items-center gap-2'}>
                                                     <button type="button" onClick={() => openTariff(i.id)}
@@ -81,7 +90,7 @@ const TableTariff = () => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteTariff(i.id)}
+                                                    <button type="button" onClick={() => deleteTariffItem(i.id)}
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faMinus}/>
                                                     </button>
@@ -101,11 +110,11 @@ const TableTariff = () => {
                                                 {i.price}
                                             </td>
                                             <td className="px-4 py-2">
-                                                {i.discount}
+                                                {i.discount}%
                                             </td>
                                             <td className="px-4 py-2">
-                                                <div>{i.privilege.map((i) => {
-                                                    return <p className={'pb-1'}>{i.title}</p>
+                                                <div>{i.privileges.map((p) => {
+                                                    return <p key={p.id} className={'pb-1'}>{p.title}</p>
                                                 })}
                                                 </div>
                                             </td>
@@ -155,6 +164,6 @@ const TableTariff = () => {
             </div>
         </section>
     );
-};
+});
 
 export default TableTariff;
