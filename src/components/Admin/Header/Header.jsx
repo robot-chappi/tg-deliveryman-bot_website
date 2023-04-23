@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faArrowRight, faArrowUp, faBookOpen,
     faBowlFood,
-    faBug,
+    faBug, faCalendar,
     faCartShopping,
-    faClose,
+    faClose, faCloud,
     faDoorOpen, faList, faListNumeric,
     faPlay,
     faShop, faUser
@@ -14,6 +14,8 @@ import {useNavigate} from "react-router-dom";
 
 
 const Header = () => {
+    const [openReviews, setOpenReviews] = useState(false);
+    const [openTypeOrders, setOpenTypeOrders] = useState(false);
     const [openProducts, setOpenProducts] = useState(false);
     const [openCategories, setOpenCategories] = useState(false);
     const [openTypes, setOpenTypes] = useState(false);
@@ -78,6 +80,24 @@ const Header = () => {
                         </ul>
                     </li>
                     <li>
+                        <button type="button" onClick={() => toggle(openTypeOrders, setOpenTypeOrders)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faCalendar}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Типы заказов</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openTypeOrders ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/typeorders"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/typeorders/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
                         <button type="button" onClick={() => toggle(openCategories, setOpenCategories)}
                                 className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
@@ -91,6 +111,24 @@ const Header = () => {
                             </li>
                             <li>
                                 <a href="/admin/categories/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openReviews, setOpenReviews)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faCloud}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Отзывы</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openReviews ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/reviews"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/reviews/create"
                                    className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
                             </li>
                         </ul>

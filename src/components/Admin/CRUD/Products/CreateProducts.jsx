@@ -67,16 +67,6 @@ const CreateProducts = observer(() => {
             formData.append('ingredients', JSON.stringify(ingredients));
 
             await createProduct(formData)
-            // return console.log({
-            //     'title': title,
-            //     'description': description,
-            //     'weight': weight,
-            //     'price': price,
-            //     'image': image,
-            //     'type': type,
-            //     'category': category,
-            //     'ingredients': ingredients,
-            // });
 
             return navigate('/admin/products')
         } catch (e) {

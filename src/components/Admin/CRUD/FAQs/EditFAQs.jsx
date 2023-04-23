@@ -63,11 +63,10 @@ const EditFAQs = observer(() => {
                                 <label htmlFor="description"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Описание
                                 </label>
-                                <input type="text" name="description" id="description"
+                                <textarea rows={5} name="description" id="description"
                                        onChange={event => setDescription(event.target.value)}
-                                       value={description}
                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                       placeholder="Напишите описание FAQ" required={true}/>
+                                          placeholder="Напишите описание FAQ" required={true}>{description}</textarea>
                             </div>
                         </div>
                         <button type={"button"}

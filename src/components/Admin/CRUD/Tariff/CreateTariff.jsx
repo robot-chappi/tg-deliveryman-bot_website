@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react'
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import {useNavigate} from "react-router-dom";
-import {privileges} from "../../../GenerationWeeklyMealPlan/mockdata";
 import {createTariff} from '../../../../http/tariffAPI'
 import {getPrivileges} from '../../../../http/privilegeAPI'
 import {observer} from 'mobx-react-lite'
@@ -15,10 +14,12 @@ const CreateTariff = observer(() => {
     const [privilegeItems, setPrivilegeItems] = useState([]);
     const [discount, setDiscount] = useState();
 
+    const [loading, setLoading] = useState(true)
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        getPrivileges().then(data => setPrivilegeItems(data))
+        getPrivileges().then(data => setPrivilegeItems(data)).finally(() => setLoading(false))
     }, [])
 
     const sendTariff = async () => {
@@ -27,7 +28,6 @@ const CreateTariff = observer(() => {
             formData.append('title', title);
             formData.append('description', description);
             formData.append('price', price);
-            formData.append('privilege', privilege);
             formData.append('discount', discount);
             formData.append('privileges', JSON.stringify(privilege));
 
@@ -49,6 +49,12 @@ const CreateTariff = observer(() => {
             }
         }
         setPrivilege(value);
+    }
+
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
     }
 
     return (

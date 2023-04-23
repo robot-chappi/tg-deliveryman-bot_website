@@ -1,35 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {observer} from 'mobx-react-lite'
+import {getTariffWithPrivileges} from '../../../../http/tariffAPI'
 
-const ReviewTariff = () => {
+const ReviewTariff = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true)
+    const [tariff, setTariff] = useState({})
 
-    console.log(id)
+    useEffect(() => {
+        getTariffWithPrivileges(id).then(data => setTariff(data)).finally(() => setLoading(false))
+    }, [])
 
-    const tariff = {
-            id: 1,
-            title: 'ЭКО',
-            description: 'Базовый тариф для опробования нашего сервиса',
-            price: 0,
-            privilege: [
-                {
-                    id: 1,
-                    title: 'Качество продуктов'
-                },
-                {
-                    id: 2,
-                    title: 'Быстрая доставка'
-                },
-                {
-                    id: 3,
-                    title: 'Телеграм канал по еде'
-                },
-            ],
-            discount: 0
-        }
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
 
     return (
@@ -66,7 +56,7 @@ const ReviewTariff = () => {
                     </tr>
                     <tr className="border-b dark:border-gray-700">
                         <th className='px-4 py-3'>Привелегии</th>
-                        <td className='px-4 py-3 text-gray-800 dark:text-white'><div>{tariff.privilege.map((i) => {
+                        <td className='px-4 py-3 text-gray-800 dark:text-white'><div>{tariff.privileges.map((i) => {
                             return <p key={i.id}>{i.title}</p>
                         })}
                         </div>
@@ -85,6 +75,6 @@ const ReviewTariff = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default ReviewTariff;

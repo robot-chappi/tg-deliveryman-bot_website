@@ -1,57 +1,48 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
-import {privileges} from "../../../GenerationWeeklyMealPlan/mockdata";
+import {getTariffWithPrivileges, patchTariff} from '../../../../http/tariffAPI'
+import {getPrivileges} from '../../../../http/privilegeAPI'
+import {observer} from 'mobx-react-lite'
 
-const EditTariff = () => {
-    const tariff = {
-        id: 1,
-        title: 'ЭКО',
-        description: 'Базовый тариф для опробования нашего сервиса',
-        price: 0,
-        privilege: [
-            {
-                id: 1,
-                title: 'Качество продуктов'
-            },
-            {
-                id: 2,
-                title: 'Быстрая доставка'
-            },
-            {
-                id: 3,
-                title: 'Телеграм канал по еде'
-            },
-        ],
-        discount: 0
-    }
-
+const EditTariff = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
 
-    const [title, setTitle] = useState(tariff.title);
-    const [description, setDescription] = useState(tariff.description);
-    const [price, setPrice] = useState(tariff.price);
-    const [privilege, setPrivilege] = useState(tariff.privilege);
-    const [discount, setDiscount] = useState(tariff.discount);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState();
+    const [privileges, setPrivileges] = useState([]);
+    const [privilege, setPrivilege] = useState([]);
+    const [discount, setDiscount] = useState();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getPrivileges().then(data => setPrivileges(data))
+        getTariffWithPrivileges(id).then(data => {
+            setTitle(data.title)
+            setDescription(data.description)
+            setPrice(data.price)
+            setPrivilege(data.privileges)
+            setDiscount(data.discount)
+        }).finally(() => setLoading(false))
+    }, [])
 
 
-    const sendTariff = () => {
+    const sendTariff = async () => {
         try {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
             formData.append('price', price);
-            formData.append('privilege', privilege);
+            formData.append('privileges', JSON.stringify(privilege));
             formData.append('discount', discount);
 
-            // return console.log({
-            //     'title': title,
-            // });
+            await patchTariff(id, formData);
 
-            return navigate(`/admin/tariff/show/${tariff.id}`)
+            return navigate(`/admin/tariff/show/${id}`)
         } catch (e) {
             console.log(e);
         }
@@ -62,7 +53,8 @@ const EditTariff = () => {
         let value = [];
         for (var i = 0, l = options.length; i < l; i++) {
             if (options[i].selected) {
-                value.push(Number(options[i].value));
+                value.push({id: Number(options[i].value)
+            });
             }
         }
         setPrivilege(value);
@@ -70,7 +62,6 @@ const EditTariff = () => {
 
     const containsObject = (obj, list) => {
         var i;
-
         for (i = 0; i < list.length; i++) {
             if (Number(list[i]['id']) === Number(obj.id)) {
                 return true;
@@ -78,6 +69,12 @@ const EditTariff = () => {
         }
 
         return false;
+    }
+
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
     }
 
     return (
@@ -103,7 +100,7 @@ const EditTariff = () => {
                             </div>
                             <div className="sm:col-span-2">
                                 <label htmlFor="description"
-                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Телефон
+                                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Описание
                                 </label>
                                 <input type="text" name="description" id="description"
                                        onChange={event => setDescription(event.target.value)}
@@ -138,7 +135,7 @@ const EditTariff = () => {
                                         onChange={(event) => handlePrivilege(event)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     {privileges.map((item) => {
-                                        return <option key={item.id} selected={containsObject(item, tariff.privilege)} value={item.id}>{item.title}</option>
+                                        return <option key={item.id} selected={containsObject(item, privilege)} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
                             </div>
@@ -154,6 +151,6 @@ const EditTariff = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditTariff;

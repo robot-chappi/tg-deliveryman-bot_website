@@ -15,6 +15,11 @@ export const getTariff = async (id) => {
   return data
 }
 
+export const getTariffWithPrivileges = async (id) => {
+  const {data} = await $host.get('api/tariff/privilege/' + id)
+  return data
+}
+
 export const deleteTariff = async (id) => {
   const {data} = await $authHost.delete('api/tariff/' + id)
   return data

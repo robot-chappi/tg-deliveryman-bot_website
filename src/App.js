@@ -64,6 +64,16 @@ import {observer} from 'mobx-react-lite'
 import Profile from './components/Profile/Profile'
 import AuthFirst from './components/Admin/Auth/AuthFIrst'
 import jwt_decode from 'jwt-decode'
+import IndexTypesOrder from './components/Admin/CRUD/TypesOrder/IndexTypesOrder'
+import TypesOrder from './components/Admin/CRUD/TypesOrder/TypesOrder'
+import CreateTypesOrder from './components/Admin/CRUD/TypesOrder/CreateTypesOrder'
+import ReviewTypesOrder from './components/Admin/CRUD/TypesOrder/ReviewTypesOrder'
+import EditTypesOrder from './components/Admin/CRUD/TypesOrder/EditTypesOrder'
+import IndexReviews from './components/Admin/CRUD/Reviews/IndexReviews'
+import CreateReviews from './components/Admin/CRUD/Reviews/CreateReviews'
+import ReviewReviews from './components/Admin/CRUD/Reviews/ReviewReviews'
+import EditReviews from './components/Admin/CRUD/Reviews/EditReviews'
+import Reviews from './components/Admin/CRUD/Reviews/Reviews'
 
 const App = observer(() => {
     // eslint-disable-next-line no-unused-vars
@@ -131,6 +141,18 @@ const App = observer(() => {
                 {user.isAdmin || user.isCopywriter || user.isAnalyst ? <Route path={'/admin'} element={<Admin/>}>
                     <Route path={'/admin'} element={<Dashboard/>}/>
                     <Route path={'/admin/auth'} element={<Auth/>}/>
+                    <Route path={'/admin/typeorders'} element={<IndexTypesOrder/>}>
+                        <Route path={'/admin/typeorders'} element={<TypesOrder/>}/>
+                        <Route path={'/admin/typeorders/create'} element={<CreateTypesOrder/>}/>
+                        <Route path={'/admin/typeorders/show/:id'} element={<ReviewTypesOrder/>}/>
+                        <Route path={'/admin/typeorders/edit/:id'} element={<EditTypesOrder/>}/>
+                    </Route>
+                    <Route path={'/admin/reviews'} element={<IndexReviews/>}>
+                        <Route path={'/admin/reviews'} element={<Reviews/>}/>
+                        <Route path={'/admin/reviews/create'} element={<CreateReviews/>}/>
+                        <Route path={'/admin/reviews/show/:id'} element={<ReviewReviews/>}/>
+                        <Route path={'/admin/reviews/edit/:id'} element={<EditReviews/>}/>
+                    </Route>
                     <Route path={'/admin/products'} element={<IndexProducts/>}>
                         <Route path={'/admin/products'} element={<Products/>}/>
                         <Route path={'/admin/products/create'} element={<CreateProducts/>}/>
