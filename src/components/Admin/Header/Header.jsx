@@ -6,7 +6,7 @@ import {
     faBug, faCalendar,
     faCartShopping,
     faClose, faCloud,
-    faDoorOpen, faList, faListNumeric,
+    faDoorOpen, faList, faListNumeric, faPlateWheat,
     faPlay,
     faShop, faUser
 } from '@fortawesome/free-solid-svg-icons'
@@ -14,6 +14,7 @@ import {useNavigate} from "react-router-dom";
 
 
 const Header = () => {
+    const [openIngredients, setOpenIngredients] = useState(false);
     const [openReviews, setOpenReviews] = useState(false);
     const [openTypeOrders, setOpenTypeOrders] = useState(false);
     const [openProducts, setOpenProducts] = useState(false);
@@ -75,6 +76,24 @@ const Header = () => {
                             </li>
                             <li>
                                 <a href="/admin/products/create"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button" onClick={() => toggle(openIngredients, setOpenIngredients)}
+                                className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
+                            <FontAwesomeIcon className="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" icon={faPlateWheat}/>
+                            <span className="flex-1 ml-3 text-left whitespace-nowrap">Ингредиенты</span>
+                        </button>
+                        <ul id="dropdown-pages" className={`${openIngredients ? 'block' : 'hidden'} py-2 space-y-2`}>
+                            <li>
+                                <a href="/admin/ingredients"
+                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
+                            </li>
+                            <li>
+                                <a href="/admin/ingredients/create"
                                    className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
                             </li>
                         </ul>

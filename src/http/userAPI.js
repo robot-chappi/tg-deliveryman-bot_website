@@ -17,6 +17,16 @@ export const getUser = async (id) => {
   return data
 }
 
+export const getPaginationUsers = async (roleId, tariffId, limit, page) => {
+  const {data} = await $authHost.get('api/user/pagination', {params: {roleId: roleId, tariffId: tariffId, limit: limit, page: page}})
+  return data
+}
+
+export const getUserWithAllInformation = async (id) => {
+  const {data} = await $authHost.get('api/user/all/information/' + id)
+  return data
+}
+
 export const getMe = async (chatId) => {
   const {data} = await $host.get('api/user/me/' + chatId)
   return data

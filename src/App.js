@@ -74,6 +74,11 @@ import CreateReviews from './components/Admin/CRUD/Reviews/CreateReviews'
 import ReviewReviews from './components/Admin/CRUD/Reviews/ReviewReviews'
 import EditReviews from './components/Admin/CRUD/Reviews/EditReviews'
 import Reviews from './components/Admin/CRUD/Reviews/Reviews'
+import IndexIngredients from './components/Admin/CRUD/Ingredients/IndexIngredients'
+import Ingredients from './components/Admin/CRUD/Ingredients/Ingredients'
+import CreateIngredients from './components/Admin/CRUD/Ingredients/CreateIngredients'
+import EditIngredients from './components/Admin/CRUD/Ingredients/EditIngredients'
+import ReviewIngredients from './components/Admin/CRUD/Ingredients/ReviewIngredients'
 
 const App = observer(() => {
     // eslint-disable-next-line no-unused-vars
@@ -152,6 +157,12 @@ const App = observer(() => {
                         <Route path={'/admin/reviews/create'} element={<CreateReviews/>}/>
                         <Route path={'/admin/reviews/show/:id'} element={<ReviewReviews/>}/>
                         <Route path={'/admin/reviews/edit/:id'} element={<EditReviews/>}/>
+                    </Route>
+                    <Route path={'/admin/ingredients'} element={<IndexIngredients/>}>
+                        <Route path={'/admin/ingredients'} element={<Ingredients/>}/>
+                        <Route path={'/admin/ingredients/create'} element={<CreateIngredients/>}/>
+                        <Route path={'/admin/ingredients/show/:id'} element={<ReviewIngredients/>}/>
+                        <Route path={'/admin/ingredients/edit/:id'} element={<EditIngredients/>}/>
                     </Route>
                     <Route path={'/admin/products'} element={<IndexProducts/>}>
                         <Route path={'/admin/products'} element={<Products/>}/>

@@ -5,17 +5,23 @@ export default class MainStore {
     this._tariffs = []
     this._faqs = []
     this._reviews = []
+    this._users = []
     this._selecredReviewsMark = {}
     this._selectedReviewsIsChecked = {}
+    this._selectedUsersRoleId = {}
+    this._selectedUsersTariffId = {}
     this._favoriteingredients = []
     this._unlovedingredients = []
 
     this._pageFaqs = 1
     this._pageReviews = 1
+    this._pageUsers = 1
     this._totalCountFaqs = 0
     this._totalCountReviews = 0
+    this._totalCountUsers = 0
     this._limitFaqs = 3
     this._limitReviews = 3
+    this._limitUsers = 3
     makeAutoObservable(this)
   }
 
@@ -29,6 +35,10 @@ export default class MainStore {
 
   setReviews(reviews) {
     this._reviews = reviews
+  }
+
+  setUsers(users) {
+    this._users = users
   }
 
 
@@ -46,11 +56,17 @@ export default class MainStore {
   setPageReviews(page) {
     this._pageReviews = page
   }
+  setPageUsers(page) {
+    this._pageUsers = page
+  }
   setTotalCountFaqs(count) {
     this._totalCountFaqs = count
   }
   setTotalCountReviews(count) {
     this._totalCountReviews = count
+  }
+  setTotalCountUsers(count) {
+    this._totalCountUsers = count
   }
 
   setSelectedReviewsMark(mark) {
@@ -61,6 +77,15 @@ export default class MainStore {
     this.setPageReviews(1)
     this._selectedReviewsIsChecked = isChecked
   }
+
+  setSelectedUsersRoleId(roleId) {
+    this.setPageUsers(1)
+    this._selectedUsersRoleId = roleId
+  }
+  setSelectedUsersTariffId(tariffId) {
+    this.setPageUsers(1)
+    this._selectedUsersTariffId = tariffId
+  }
   get tariffs() {
     return this._tariffs
   }
@@ -70,6 +95,9 @@ export default class MainStore {
   }
   get reviews() {
     return this._reviews
+  }
+  get users() {
+    return this._users
   }
   get favoriteIngredientItems() {
     return this._favoriteingredients
@@ -84,11 +112,17 @@ export default class MainStore {
   get totalCountReviews() {
     return this._totalCountReviews
   }
+  get totalCountUsers() {
+    return this._totalCountUsers
+  }
   get pageFaqs() {
     return this._pageFaqs
   }
   get pageReviews() {
     return this._pageReviews
+  }
+  get pageUsers() {
+    return this._pageUsers
   }
   get selectedReviewsMark() {
     return this._selecredReviewsMark
@@ -96,10 +130,19 @@ export default class MainStore {
   get selectedReviewsIsChecked() {
     return this._selectedReviewsIsChecked
   }
+  get selectedUsersRoleId() {
+    return this._selectedUsersRoleId
+  }
+  get selectedUsersTariffId() {
+    return this._selectedUsersTariffId
+  }
   get limitFaqs() {
     return this._limitFaqs
   }
   get limitReviews() {
     return this._limitReviews
+  }
+  get limitUsers() {
+    return this._limitUsers
   }
 }
