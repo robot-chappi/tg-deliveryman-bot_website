@@ -1,55 +1,45 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
-import {tariff, roles} from "../../../GenerationWeeklyMealPlan/mockdata";
+import {observer} from 'mobx-react-lite'
+import {getUserWithAllInformation, patchUser} from '../../../../http/userAPI'
+import {getRoles} from '../../../../http/roleAPI'
+import {getTariffs} from '../../../../http/tariffAPI'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faArrowsRotate} from '@fortawesome/free-solid-svg-icons'
 
-const EditUsers = () => {
-    const user = {
-            id: 1,
-            name: 'Васильевич Вася Василин',
-            phone: '89206742389',
-            address: 'Россия, Москва',
-            role: {
-                id: 4,
-                name: 'Пользователь',
-                slug: 'user'
-            },
-            tariff: {
-                id: 1,
-                title: 'ЭКО',
-                description: 'Базовый тариф для опробования нашего сервиса',
-                price: 0,
-                privilege: [
-                    {
-                        id: 1,
-                        title: 'Качество продуктов'
-                    },
-                    {
-                        id: 2,
-                        title: 'Быстрая доставка'
-                    },
-                    {
-                        id: 3,
-                        title: 'Телеграм канал по еде'
-                    },
-                ],
-                discount: 0
-            }
-        }
-
+const EditUsers = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
 
-    const [name, setName] = useState(user.name);
-    const [phone, setPhone] = useState(user.phone);
-    const [address, setAddress] = useState(user.address);
-    const [role, setRole] = useState(user.role);
-    const [tariffItem, setTariffItem] = useState(user.tariff);
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const [roles, setRoles] = useState();
+    const [role, setRole] = useState();
+    const [tariffItem, setTariffItem] = useState();
+    const [tariffs, setTariffs] = useState();
+    const [orders, setOrders] = useState([]);
+    const [newOrders, setNewOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [reload, setReload] = useState(0);
 
+    useEffect(() => {
+        getRoles().then(data => setRoles(data))
+        getTariffs().then(data => setTariffs(data))
+        getUserWithAllInformation(id).then(data => {
+            setName(data.user.name)
+            setPhone(data.user.phoneNumber)
+            setAddress(data.user.address)
+            setRole(data.user.role)
+            setTariffItem(data.user.tariff)
+            setOrders(data.orders)
+        }).finally(() => setLoading(false))
+    }, [reload])
 
-    const sendUser = () => {
+    const sendUser = async () => {
         try {
             const formData = new FormData();
             formData.append('name', name);
@@ -57,17 +47,31 @@ const EditUsers = () => {
             formData.append('address', address);
             formData.append('role', role);
             formData.append('tariff', tariffItem);
+            formData.append('orders', JSON.stringify(newOrders));
 
-            // return console.log({
-            //     'title': title,
-            // });
+            await patchUser(id, formData);
 
-            return navigate(`/admin/users/show/${user.id}`)
+            // return navigate(`/admin/users/show/${id}`)
         } catch (e) {
             console.log(e);
         }
     }
 
+    const changeIsComplete = () => {
+        setReload(reload + 1)
+        console.log(111)
+    }
+
+    const changeIsPaid = () => {
+        setReload(reload + 1)
+        console.log(222)
+    }
+
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div>
@@ -118,7 +122,7 @@ const EditUsers = () => {
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Выберете роль</option>
                                     {roles.map((item) => {
-                                        return <option key={item.id} selected={role.id === item.id ? true : false} value={item.id}>{item.name}</option>
+                                        return <option key={item.id} selected={role.id === item.id ? true : false} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
                             </div>
@@ -129,11 +133,26 @@ const EditUsers = () => {
                                         onChange={event => setTariffItem(event.target.value)}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Выберете тариф</option>
-                                    {tariff.map((item) => {
+                                    {tariffs.map((item) => {
                                         return <option key={item.id} selected={tariffItem.id === item.id ? true : false} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
                             </div>
+                            {orders && orders.length > 0 ?
+                              <div className={'block mb-2 text-sm font-medium text-gray-900 dark:text-white'}>
+                                  {orders.map(i => {
+                                      return <div key={i.id}>
+                                          <p><label>ID заказа:  {i.id}</label></p>
+                                          <p className={'font-thin'}><label>Выполнено:  {i.isComplete ? 'Да' : 'Нет'} <button type={"button"} onClick={() => changeIsComplete()} className="inline-flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                              <FontAwesomeIcon icon={faArrowsRotate} />
+                                          </button></label></p>
+                                          <p className={'font-thin'}><label>Оплачено:  {i.isPaid ? 'Да' : 'Нет'} <button type={"button"} onClick={() => changeIsPaid()} className="inline-flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                              <FontAwesomeIcon icon={faArrowsRotate}/>
+                                          </button></label></p>
+                                      </div>
+                                  })}
+                              </div>
+                            : <></>}
                         </div>
                         <button type={"button"}
                                 onClick={sendUser}
@@ -146,6 +165,6 @@ const EditUsers = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditUsers;
