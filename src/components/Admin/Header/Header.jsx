@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faArrowRight, faArrowUp, faBookOpen,
@@ -11,9 +11,13 @@ import {
     faShop, faUser
 } from '@fortawesome/free-solid-svg-icons'
 import {useNavigate} from "react-router-dom";
+import {Context} from '../../../index'
+import {observer} from 'mobx-react-lite'
 
 
-const Header = () => {
+const Header = observer(() => {
+    const {user} = useContext(Context)
+
     const [openIngredients, setOpenIngredients] = useState(false);
     const [openReviews, setOpenReviews] = useState(false);
     const [openTypeOrders, setOpenTypeOrders] = useState(false);
@@ -34,6 +38,13 @@ const Header = () => {
 
     const logout = () => {
         try {
+            localStorage.removeItem('token')
+            localStorage.removeItem('auth')
+            user.setUser({})
+            user.setIsAuth(false)
+            user.setIsAdmin(false)
+            user.setIsAnalyst(false)
+            user.setIsCopywriter(false)
             return navigate('/');
         } catch (e) {
             console.log(e)
@@ -164,10 +175,12 @@ const Header = () => {
                                 <a href="/admin/users"
                                    className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Обзор</a>
                             </li>
-                            <li>
-                                <a href="/admin/users/create"
-                                   className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
-                            </li>
+                            {user.isAdmin ?
+                              <li>
+                                  <a href="/admin/users/create"
+                                     className="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Создать</a>
+                              </li>
+                              : <></>}
                         </ul>
                     </li>
                     <li>
@@ -267,15 +280,21 @@ const Header = () => {
                         </a>
                     </li>
                     <li>
-                        <button type={'button'} onClick={logout} className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">
+                        <button type={'button'} onClick={() => navigate('/')} className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">
                             <FontAwesomeIcon icon={faDoorOpen}/>
-                            <span className={'pl-1'}>Выйти</span>
+                            <span className={'pl-2'}>Выйти в меню</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type={'button'} onClick={logout} className="flex items-center p-2 text-base font-bold text-red-900 rounded-lg transition duration-75 hover:bg-red-100 dark:hover:bg-red-700 dark:text-red-500 group">
+                            <FontAwesomeIcon icon={faClose}/>
+                            <span className={'pl-2'}>Выйти из аккаунта</span>
                         </button>
                     </li>
                 </ul>
             </div>
             </aside>
     );
-};
+});
 
 export default Header;

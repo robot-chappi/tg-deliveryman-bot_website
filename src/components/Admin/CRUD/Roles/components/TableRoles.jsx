@@ -1,15 +1,22 @@
-import React, {useState} from 'react';
-import {roles} from "../../../../GenerationWeeklyMealPlan/mockdata";
+import React, {useEffect, useState} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBookOpen, faEdit, faMinus} from "@fortawesome/free-solid-svg-icons";
 import {useNavigate} from "react-router-dom";
+import {deleteRole, getRoles} from '../../../../../http/roleAPI'
+import {observer} from 'mobx-react-lite'
 
-const TableRoles = () => {
+const TableRoles = observer(() => {
     // eslint-disable-next-line no-unused-vars
-    const [roleItems, setRoleItems] = useState(roles);
+    const [roleItems, setRoleItems] = useState([]);
     const [paginateBack, setPaginateBack] = useState(0);
     const [paginateForward, setPaginateForward] = useState(5);
+    const [reloadPage, setReloadPage] = useState(0);
+
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getRoles().then(data => setRoleItems(data))
+    }, [reloadPage])
 
     const openRole = (id) => {
         return navigate(`/admin/roles/show/${id}`);
@@ -19,8 +26,9 @@ const TableRoles = () => {
         return navigate(`/admin/roles/edit/${id}`);
     }
 
-    const deleteRole = (id) => {
-        return navigate('/admin')
+    const deleteRoleItem = async (id) => {
+        await deleteRole(id);
+        setReloadPage(reloadPage + 1)
     }
 
     return (
@@ -78,7 +86,7 @@ const TableRoles = () => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteRole(i.id)}
+                                                    <button type="button" onClick={() => deleteRoleItem(i.id)}
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faMinus}/>
                                                     </button>
@@ -89,7 +97,7 @@ const TableRoles = () => {
                                                 {i.id}
                                             </th>
                                             <td className="px-4 py-2">
-                                                {i.name}
+                                                {i.title}
                                             </td>
                                             <td className="px-4 py-2">
                                                 {i.slug}
@@ -140,6 +148,6 @@ const TableRoles = () => {
             </div>
         </section>
     );
-};
+});
 
 export default TableRoles;

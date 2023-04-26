@@ -10,7 +10,7 @@ import {getRoles} from '../../../../../http/roleAPI'
 
 const TableUsers = observer(() => {
     // eslint-disable-next-line no-unused-vars
-    const {main} = useContext(Context);
+    const {main, user} = useContext(Context);
     const [reloadPage, setReloadPage] = useState(0);
     const [roles, setRoles] = useState([]);
     const [tariffs, setTariffs] = useState([]);
@@ -61,21 +61,23 @@ const TableUsers = observer(() => {
                                 <div className="flex items-center flex-1 space-x-4">
                                     <h5>
                                         <span className="text-gray-500">Всего пользователей: </span>
-                                        <span className="dark:text-white">{main.users.length}</span>
+                                        <span className="dark:text-white">{main.totalCountUsers}</span>
                                     </h5>
                                 </div>
-                                <div
+                                {user.isAdmin ?
+                                  <div
                                     className="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
-                                    <button type="button" onClick={() => navigate('/admin/users/create')}
-                                            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                                        <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20"
-                                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <path clipRule="evenodd" fillRule="evenodd"
-                                                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
-                                        </svg>
-                                        Добавить пользователя
-                                    </button>
-                                </div>
+                                      <button type="button" onClick={() => navigate('/admin/users/create')}
+                                              className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                          <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20"
+                                               xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                              <path clipRule="evenodd" fillRule="evenodd"
+                                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                                          </svg>
+                                          Добавить пользователя
+                                      </button>
+                                  </div>
+                                  : <></>}
                                 <h5><span className={'text-gray-500'}>Роли:</span></h5>
                                 <div className={'flex items-center gap-1'} style={{flexWrap: 'wrap'}}>
                                     {roles.map((item) => {
@@ -126,10 +128,12 @@ const TableUsers = observer(() => {
                                                             className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                                         <FontAwesomeIcon icon={faEdit}/>
                                                     </button>
-                                                    <button type="button" onClick={() => deleteUserItem(i.id)}
-                                                            className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-                                                        <FontAwesomeIcon icon={faMinus}/>
-                                                    </button>
+                                                    {user.isAdmin ?
+                                                      <button type="button" onClick={() => deleteUserItem(i.id)}
+                                                              className="px-2 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                                                          <FontAwesomeIcon icon={faMinus}/>
+                                                      </button>
+                                                      : <></>}
                                                 </div>
                                             </td>
                                             <th scope="row"

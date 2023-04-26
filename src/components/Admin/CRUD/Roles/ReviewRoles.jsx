@@ -1,21 +1,19 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getRole} from '../../../../http/roleAPI'
+import {observer} from 'mobx-react-lite'
 
-const ReviewRoles = () => {
+const ReviewRoles = observer(() => {
     const {id} = useParams();
     const navigate = useNavigate();
+    const [role, setRole] = useState({})
 
-    console.log(id)
-
-    const role = {
-            id: 1,
-            name: 'Администратор',
-            slug: 'admin'
-        }
-
-
+    useEffect(() => {
+        getRole(id).then(data => setRole(data))
+    }, [])
+    
     return (
         <div className={'bg-gray-50 dark:bg-gray-900'}>
             <Header/>
@@ -34,7 +32,7 @@ const ReviewRoles = () => {
                     </tr>
                     <tr className="border-b dark:border-gray-700">
                         <th className='px-4 py-3'>Название</th>
-                        <td className='px-4 py-3 text-gray-800 dark:text-white'>{role.name}</td>
+                        <td className='px-4 py-3 text-gray-800 dark:text-white'>{role.title}</td>
                     </tr>
                     <tr className="border-b dark:border-gray-700">
                         <th className='px-4 py-3'>Опознование</th>
@@ -53,6 +51,6 @@ const ReviewRoles = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default ReviewRoles;

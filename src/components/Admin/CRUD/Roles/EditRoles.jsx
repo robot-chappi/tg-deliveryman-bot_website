@@ -1,39 +1,41 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
+import {getRole, patchRole} from '../../../../http/roleAPI'
+import {observer} from 'mobx-react-lite'
 
-const EditRoles = () => {
-    const role = {
-            id: 2,
-            name: 'Копирайтер',
-            slug: 'copywriter'
-        }
-
+const EditRoles = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
 
-    const [name, setName] = useState(role.name);
-    const [slug, setSlug] = useState(role.slug);
+    const [title, setTitle] = useState('');
+    const [slug, setSlug] = useState('');
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        getRole(id).then(data => {
+            setTitle(data.title)
+            setSlug(data.slug)
+        }).finally(() => setLoading(false))
+    }, [])
 
-    const sendRole = () => {
+    const sendRole = async () => {
         try {
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('slug', slug);
+            await patchRole(id, {title: title, slug: slug})
 
-            // return console.log({
-            //     'title': title,
-            // });
-
-            return navigate(`/admin/roles/show/${role.id}`)
+            return navigate(`/admin/roles/show/${id}`)
         } catch (e) {
             console.log(e);
         }
     }
 
+    if (loading) {
+        return <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <p className={'text-gray-500 sm:text-xl dark:text-gray-400'}>Идет загрузка...</p>
+        </div>
+    }
 
     return (
         <div>
@@ -51,8 +53,8 @@ const EditRoles = () => {
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Название
                                 </label>
                                 <input type="text" name="name" id="name"
-                                       onChange={event => setName(event.target.value)}
-                                       value={name}
+                                       onChange={event => setTitle(event.target.value)}
+                                       value={title}
                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                        placeholder="Напишите название роли" required={true}/>
                             </div>
@@ -78,6 +80,6 @@ const EditRoles = () => {
             <Footer/>
         </div>
     );
-};
+});
 
 export default EditRoles;

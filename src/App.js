@@ -1,6 +1,5 @@
 import './App.css';
 import 'aos/dist/aos.css';
-// import {useEffect, useState} from "react";
 import {useContext, useEffect, useState} from 'react'
 import {useTelegram} from "./hooks/useTelegram";
 import {Route, Routes} from "react-router-dom";
@@ -62,7 +61,7 @@ import {Context} from './index'
 import {getUserToken} from './http/userAPI'
 import {observer} from 'mobx-react-lite'
 import Profile from './components/Profile/Profile'
-import AuthFirst from './components/Admin/Auth/AuthFIrst'
+import AuthFirst from './components/Admin/Auth/AuthFirst'
 import jwt_decode from 'jwt-decode'
 import IndexTypesOrder from './components/Admin/CRUD/TypesOrder/IndexTypesOrder'
 import TypesOrder from './components/Admin/CRUD/TypesOrder/TypesOrder'
@@ -88,14 +87,9 @@ const App = observer(() => {
     useEffect(() => {
         tg.ready();
 
-        // 895411068
-        // user.user.chatId
         const userItem = localStorage.getItem('token')
-        // console.log(jwt_decode(userItem).chatId)
-        getUserToken(userItem ? jwt_decode(userItem).chatId : userTG).then(data => {
-            // console.log(data)
+        getUserToken(userItem ? jwt_decode(userItem).chatId : userTG ? userTG.chatId : null).then(data => {
             user.setIsAuth(true);
-            // console.log(111)
             if (data.role === 'admin') {
                 user.setIsAdmin(true)
             }
@@ -107,8 +101,6 @@ const App = observer(() => {
             }
             user.setUser(data)
         })
-
-        // .finally(() => setLoading(false))
 
         const checkAdminRoles = () => {
             const item = localStorage.getItem('auth');
@@ -190,7 +182,7 @@ const App = observer(() => {
                     </Route>
                     <Route path={'/admin/users'} element={<IndexUsers/>}>
                         <Route path={'/admin/users'} element={<Users/>}/>
-                        <Route path={'/admin/users/create'} element={<CreateUsers/>}/>
+                        {user.isAdmin ? <Route path={'/admin/users/create'} element={<CreateUsers/>}/> : <></>}
                         <Route path={'/admin/users/show/:id'} element={<ReviewUsers/>}/>
                         <Route path={'/admin/users/edit/:id'} element={<EditUsers/>}/>
                     </Route>

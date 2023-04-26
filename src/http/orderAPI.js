@@ -5,6 +5,16 @@ export const createOrder = async (order) => {
   return data
 }
 
+export const completeOrder = async (id) => {
+  const {data} = await $authHost.post('api/order/complete/' + id)
+  return data
+}
+
+export const payOrder = async (id) => {
+  const {data} = await $authHost.post('api/order/pay/' + id)
+  return data
+}
+
 export const getOrder = async (id) => {
   const {data} = await $authHost.get('api/order/' + id)
   return data

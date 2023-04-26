@@ -11,7 +11,7 @@ export const getRoles = async () => {
 }
 
 export const getRole = async (id) => {
-  const {data} = await $host.get('api/role/' + id)
+  const {data} = await $authHost.get('api/role/' + id)
   return data
 }
 

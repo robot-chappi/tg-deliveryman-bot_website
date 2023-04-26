@@ -58,6 +58,6 @@ export const deleteUser = async (id) => {
 }
 
 export const patchUser = async (id, user) => {
-  const {data} = await $authHost.patch('api/user/' + id, user, {headers: {'Content-Type': 'multipart/form-data', 'Accept': 'application/json'}})
+  const {data} = await $authHost.patch('api/user/' + id, user)
   return data;
 }

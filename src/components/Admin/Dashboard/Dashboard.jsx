@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from 'react'
-import { useOutletContext } from "react-router-dom"
 import Header from "../Header/Header";
 import BarChart from "../../../charts/barChart";
 import {barChartDataDailyTraffic, barChartOptionsDailyTraffic} from "../../../variables/charts";
@@ -12,8 +11,6 @@ import {getMe, getUsers} from '../../../http/userAPI'
 import {getProducts} from '../../../http/productAPI'
 import {getCompletedOrders} from '../../../http/orderAPI'
 import {observer} from 'mobx-react-lite'
-
-
 
 const Dashboard = observer(() => {
     const {user} = useContext(Context);

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {useNavigate, useParams} from "react-router-dom";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
@@ -8,12 +8,16 @@ import {getRoles} from '../../../../http/roleAPI'
 import {getTariffs} from '../../../../http/tariffAPI'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faArrowsRotate} from '@fortawesome/free-solid-svg-icons'
+import {completeOrder, payOrder} from '../../../../http/orderAPI'
+import {Context} from '../../../../index'
 
 const EditUsers = observer(() => {
     // eslint-disable-next-line no-unused-vars
     const {id} = useParams();
     const navigate = useNavigate();
+    const {user} = useContext(Context)
 
+    const [chatId, setChatId] = useState('');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
@@ -22,7 +26,6 @@ const EditUsers = observer(() => {
     const [tariffItem, setTariffItem] = useState();
     const [tariffs, setTariffs] = useState();
     const [orders, setOrders] = useState([]);
-    const [newOrders, setNewOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [reload, setReload] = useState(0);
 
@@ -30,6 +33,7 @@ const EditUsers = observer(() => {
         getRoles().then(data => setRoles(data))
         getTariffs().then(data => setTariffs(data))
         getUserWithAllInformation(id).then(data => {
+            setChatId(data.user.chatId)
             setName(data.user.name)
             setPhone(data.user.phoneNumber)
             setAddress(data.user.address)
@@ -42,29 +46,29 @@ const EditUsers = observer(() => {
     const sendUser = async () => {
         try {
             const formData = new FormData();
+            formData.append('chatId', chatId);
             formData.append('name', name);
-            formData.append('phone', phone);
+            formData.append('phoneNumber', phone);
             formData.append('address', address);
-            formData.append('role', role);
-            formData.append('tariff', tariffItem);
-            formData.append('orders', JSON.stringify(newOrders));
+            formData.append('roleId', role.id);
+            formData.append('tariffId', tariffItem.id);
 
             await patchUser(id, formData);
 
-            // return navigate(`/admin/users/show/${id}`)
+            return navigate(`/admin/users/show/${id}`)
         } catch (e) {
             console.log(e);
         }
     }
 
-    const changeIsComplete = () => {
+    const changeIsComplete = async (id) => {
+        await completeOrder(id)
         setReload(reload + 1)
-        console.log(111)
     }
 
-    const changeIsPaid = () => {
+    const changeIsPaid = async (id) => {
+        await payOrder(id)
         setReload(reload + 1)
-        console.log(222)
     }
 
     if (loading) {
@@ -84,6 +88,22 @@ const EditUsers = observer(() => {
                     </div>
                     <form action="#">
                         <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                            {role.slug !== 'admin' && role.slug !== 'analyst' && role.slug !== 'copywriter' ?
+                              <div className="sm:col-span-2">
+                                  <label htmlFor="chatId"
+                                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ChatId
+                                  </label>
+                                  <input type="text" name="chatId" id="chatId"
+                                         onChange={event => setChatId(event.target.value)}
+                                         value={chatId}
+                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                         placeholder="Напишите ChatId пользователя" required={true}/>
+                              </div>
+                              : <div className="sm:col-span-2">
+                                  <label htmlFor="chatId"
+                                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ChatId: {chatId}
+                                  </label>
+                              </div> }
                             <div className="sm:col-span-2">
                                 <label htmlFor="name"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ФИО
@@ -114,7 +134,7 @@ const EditUsers = observer(() => {
                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                        placeholder="Напишите адрес пользователя" required={true}/>
                             </div>
-                            <div>
+                            {user.isAdmin ? <div>
                                 <label htmlFor="role"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Роль</label>
                                 <select id="role"
@@ -125,7 +145,8 @@ const EditUsers = observer(() => {
                                         return <option key={item.id} selected={role.id === item.id ? true : false} value={item.id}>{item.title}</option>
                                     })}
                                 </select>
-                            </div>
+                            </div> : <></>}
+
                             <div>
                                 <label htmlFor="tariff"
                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Тариф</label>
@@ -143,10 +164,10 @@ const EditUsers = observer(() => {
                                   {orders.map(i => {
                                       return <div key={i.id}>
                                           <p><label>ID заказа:  {i.id}</label></p>
-                                          <p className={'font-thin'}><label>Выполнено:  {i.isComplete ? 'Да' : 'Нет'} <button type={"button"} onClick={() => changeIsComplete()} className="inline-flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                          <p className={'font-thin'}><label>Выполнено:  {i.isComplete ? 'Да' : 'Нет'} <button type={"button"} onClick={() => changeIsComplete(i.id)} className="inline-flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                                               <FontAwesomeIcon icon={faArrowsRotate} />
                                           </button></label></p>
-                                          <p className={'font-thin'}><label>Оплачено:  {i.isPaid ? 'Да' : 'Нет'} <button type={"button"} onClick={() => changeIsPaid()} className="inline-flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+                                          <p className={'font-thin'}><label>Оплачено:  {i.isPaid ? 'Да' : 'Нет'} <button type={"button"} onClick={() => changeIsPaid(i.id)} className="inline-flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                                               <FontAwesomeIcon icon={faArrowsRotate}/>
                                           </button></label></p>
                                       </div>
